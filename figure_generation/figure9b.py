@@ -16,7 +16,7 @@ this_dir = os.path.dirname(os.path.realpath(__file__))
 results_dir = os.path.join(utils.PROJECT_DIR, 'sim', 'd_est_sim_results')
 
 results_filekey = [('100725060618_estimates_100725060618_seeds_tri600_moresim.npz','wn_snradjust_lattice_faster',{'color':'blue', 'label':'Proposed ($T=2\mu s$, x1)'}), 
-                   ('102125225849_estimates_100725060618_seeds_lorentz_faster.npz','lorentz_faster',{'color':'orange', 'label':'Lorentzian Regression ($T=2\mu s$, x1)'}),
+                   ('101425034528_estimates_100725060618_seeds_lorentz_redo.npz','lorentz',{'color':'orange', 'label':'Lorentzian Regression ($T=2\mu s$, x1)'}),
                 ('101325191526_estimates_100725060618_seeds_maxpd_redo.npz','maxpd',{'color':'green', 'label':'Maximum Periodogram ($T=2\mu s$, x1)'}),
                 ('100825105424_estimates_100725060618_seeds_tri600mf.npz','matchedfilter_optim',{'color':'grey', 'label':'Matched Filter ($T=2\mu s$, x1)'}),
                 ]
