@@ -22,10 +22,8 @@ results_filekey = [ ('100725091013_estimates_100725091013_seeds_sin600_moresim.n
 
 crlb_paths = []
 
-# plt.rcParams['text.usetex'] = True
 plt.rcParams["font.family"] = "Times New Roman"
 font = {'fontname':'Times New Roman'}
-# plt.rc('text.latex', preamble=r"\usepackage{bm}\boldmath\renewcommand{\seriesdefault}{\bfdefault}")
 
 fig = plt.figure(1, figsize=(9,12))
 ax1 = fig.add_subplot(111)
@@ -93,12 +91,9 @@ font = {'fontname':'Times New Roman'}
 
 ax1.set_yscale('log')
 ax1.legend(loc='upper left', fontsize=25).set_zorder(3*len(results_filekey))
-# ax1.legend(loc=(0.23,0.57))
 ax1.set_xlabel('target distance (m)', fontsize=35)
 ax1.set_ylabel('RMSE (m)', fontsize=35)
 ax1.tick_params(axis='both', which='major', labelsize=25)
-#ax1.set_title('Triangular Modulation (Observed Length = $2\mu s$)', fontsize=20)
-# ax1.set_ylim(2e-4,2e1)
 ax1.set_ylim(8e-4,8e4)
 ax1.grid(linewidth=2)
 fig.tight_layout()

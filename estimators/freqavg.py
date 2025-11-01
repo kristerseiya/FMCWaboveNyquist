@@ -53,7 +53,6 @@ class FrequencyAveraging(Estimator):
         
         phase = self.fmcw_meas.generate_phase(t, 0, 0)
         if_tx = (phase[1:]-phase[:-1]) * self.sample_rate / (2*np.pi)
-        # V = 4*np.pi*np.mean(np.abs(if_tx))/3e8 #/ self.sample_rate
         V = 2*np.pi*np.mean(np.abs(if_tx))*2/3e8 #/ self.sample_rate
 
 
@@ -61,8 +60,6 @@ class FrequencyAveraging(Estimator):
         phase_hat = np.unwrap(phase_hat)
         ft = 2*np.pi*2/self.lambd_c*v_hat*t
         tmp = phase_hat - ft
-        #tmp = utils.wrap(phase_hat - ft, -np.pi, np.pi)
-        # tmp = utils.wrap(phase_hat, -np.pi, np.pi)
         phi_avg = np.mean( np.abs(tmp) ) #/ self.sample_rate
         d_hat = phi_avg / V #* self.sample_rate
 

@@ -36,8 +36,6 @@ t = np.arange(0, 2*T, 1/sample_rate)
 
 distance_arr = np.arange(0, meas_prop.get_max_d(), 0.5)
 velocity_arr = np.arange(-meas_prop.get_max_v(), meas_prop.get_max_v(), 0.5)
-# distance_arr = np.arange(0, meas_prop.get_max_d(), 3)
-# velocity_arr = np.arange(-meas_prop.get_max_v(), meas_prop.get_max_v(), 5)
 if_d2 = np.zeros((len(distance_arr), len(velocity_arr)))
 g_hat = modf.generate_freq(t, meas_prop.get_max_d()/2, 0, normalize_freq=True)
 for i in np.arange(0, len(distance_arr)):
@@ -59,7 +57,6 @@ ax1.tick_params(axis='both', which='major', labelsize=15*size_mult)
 divider1 = make_axes_locatable(ax1)
 cax1 = divider1.append_axes('right', size='5%', pad=0.05)
 cbar=fig1.colorbar(mesh, cax=cax1, orientation='vertical')
-# cbar.ax.tick_params(labelsize=10*size_mult)
 cbar.ax.set_yticks([])
 
 d_interval = sample_rate/2/B*T*2*3e8/2
@@ -80,6 +77,4 @@ ax1.text((T+d_interval/3e8)/2/T, 0.03, r'$\Delta_\tau$', fontsize=30*size_mult)
 
 ax1.set_ylim(-0.5, 0.5)
 ax1.set_xlim(0, T*2/2/T)
-#ax1.annotate("", xy=((T+d_interval*2/3e8)*1e6,0), xytext=((T-d_interval*2/3e8)*1e6,0), arrowprops=dict(arrowstyle='<->', head_length=5*size_mult, linewidth=2*size_mult))
-#ax1.annotate("", xy=((T)*1e6,-0.5), xytext=((T)*1e6,0.5), arrowprops=dict(arrowstyle='<->'))
 plt.show()

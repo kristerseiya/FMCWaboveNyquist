@@ -23,7 +23,6 @@ size_mult = 3
 
 # load parameters
 config_filepath = utils.PARAMS_PATH
-# config_name = 'tri_2e8_600_5'
 config_name = 'sin_2e8_600_5'
 meas_prop = fmcw_sys.import_meas_prop_from_config(config_filepath, config_name)
 meas_prop.sample_rate /= 10
@@ -66,43 +65,10 @@ def compute_outer_cov(distance):
         cov_1st_row[m+1] = 2*np.pi*linewidth*(m/sample_rate - tau)
     cov = toeplitz(cov_1st_row)
     _, d_deriv, _ = modf.generate_freq(t, distance, 0, compute_jacobian=True, normalize_freq=True)
-    # d_deriv = t - tau
     outer = np.outer(d_deriv, d_deriv)
-
-    # firstrow = np.zeros((outer.shape[0],))
-    # N = len(firstrow)
-    # firstrow[0] = 1
-    # firstrow[N//6] = 1
-    # firstrow[N//6*2] = 1
-    # firstrow[N//6*3] = 1
-    # firstrow[N//6*4] = 1
-    # firstrow[N//6*5] = 1
-    # outer = outer + toeplitz(firstrow) * 0.01
     return t, d_deriv, outer, cov
 
 t, d_deriv, outer, cov = compute_outer_cov(distance)
-# simulation parameters
-
-# def compute_cov(distance):
-#     t = np.arange(0, 6*T, 1/sample_rate)
-#     t = 0.5* (t[1:] + t[:-1])
-#     cov_1st_row = np.zeros((len(t)))
-#     cov_1st_row[0] = 4*np.pi*linewidth/sample_rate
-#     tau = distance*2/3e8
-#     m = int(np.floor(tau*sample_rate))
-#     cov_1st_row[m] += 2*np.pi*linewidth*(tau - (m+1)/sample_rate)
-#     if (m+1) < len(t):
-#         cov_1st_row[m+1] = 2*np.pi*linewidth*(m/sample_rate - tau)
-#     cov = toeplitz(cov_1st_row)
-#     # d_deriv = t - tau
-#     return cov
-
-# cov = compute_cov(500)
-
-# plt.figure(figsize=(5,5))
-# plt.subplot(1,1,1)
-# plt.pcolormesh(cov[::-1], vmax=np.amax(cov), vmin=np.amax(cov)*-1, cmap='bwr')
-
 
 plt.figure(figsize=(8*size_mult,4*size_mult))
 plt.rcParams['text.usetex'] = True
@@ -145,19 +111,6 @@ ax_sub2.axis('off')
 
 ax.set_title('Jacobian Outer Product $\\frac{\\partial \\bm g_d^T}{\\partial d} \\frac{\\partial \\bm g_d}{\\partial d}$', y=-0.2, fontsize=15*size_mult)
 
-# plt.setp(ax_sub1.get_xticklabels(), visible=False)
-# plt.setp(ax_sub1.get_yticklabels(), visible=False)
-# plt.setp(ax_sub2.get_xticklabels(), visible=False)
-# plt.setp(ax_sub2.get_yticklabels(), visible=False)
-# plt.setp(ax_sub1.get_xticks(), visible=False)
-# plt.setp(ax_sub1.get_yticks(), visible=False)
-# plt.setp(ax_sub2.get_xticks(), visible=False)
-# plt.setp(ax_sub2.get_yticks(), visible=False)
-# ax_sub1.set_xticklabels(visible=False)
-# ax_sub1.set_yticks([])
-# ax_sub2.set_xticks([])
-# ax_sub2.set_yticks([])
-
 plt.subplot(1,2,2)
 ax = plt.gca()
 
@@ -168,26 +121,14 @@ ax.invert_yaxis()
 ax.set_xticks([0, T, tau, 2*T, 3*T, 4*T-1/sample_rate], ['$0$', '$T$', r'$\tau$', '$2T$', '$3T$', '$4T$'], fontsize=10*size_mult)
 ax.set_yticks([0, T, tau, 2*T, 3*T, 4*T-1/sample_rate], ['$0$', '$T$', r'$\tau$', '$2T$', '$3T$', '$4T$'], fontsize=10*size_mult)
 ax.set_aspect('equal')
-# rect = patches.Rectangle((0, 3+2*len(t)), len(t), len(t), linewidth=2, linestyle='--', edgecolor='black', facecolor='none')
-# ax.add_patch(rect)
-# rect = patches.Rectangle((1+len(t), 1+len(t)), len(t), len(t), linewidth=2, linestyle='--', edgecolor='black', facecolor='none')
-# ax.add_patch(rect)
-# rect = patches.Rectangle((3+2*len(t), 0), len(t), len(t), linewidth=2, linestyle='--', edgecolor='black', facecolor='none')
-# ax.add_patch(rect)
 rect = patches.Rectangle((0, 2*T), 2*T, 2*T, linewidth=2, linestyle='--', edgecolor='black', facecolor='none')
 ax.add_patch(rect)
 rect = patches.Rectangle((2*T, 0), 2*T, 2*T, linewidth=2, linestyle='--', edgecolor='black', facecolor='none')
 ax.add_patch(rect)
-# rect = patches.Rectangle((0, 0), 3*len(t)+3, 3*len(t)+3, linewidth=2, linestyle='-', edgecolor='black', facecolor='none')
-# ax.add_patch(rect)
 rect = patches.Rectangle((0, 0), 4*T, 4*T, linewidth=2, linestyle='-', edgecolor='black', facecolor='none')
 ax.add_patch(rect)
 
-# ax.get_xaxis().set_ticks([])
-# ax.get_yaxis().set_ticks([])
-
 divider = make_axes_locatable(ax)
-# below height and pad are in inches
 cax = divider.append_axes('right', size='5%', pad=0.05)
 cbar = fig.colorbar(mesh, cax=cax, orientation='vertical')
 cbar.ax.tick_params(labelsize=10*size_mult)

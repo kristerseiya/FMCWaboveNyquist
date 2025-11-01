@@ -13,9 +13,6 @@ import time_freq
 import estimators
 import time
 
-# param_name = 'tri_2e8_1000_5'
-# param_name = 'tri_2e7_300_2'
-# param_name = 'tri_2e8_6000_5'
 param_name = 'tri_2e8_600_5'
 n_cycle = 1
 
@@ -32,8 +29,6 @@ sample_rate = meas_prop.get_sample_rate()
 T = meas_prop.get_chirp_length()
 t = np.arange(0, 2*T*n_cycle, 1./sample_rate)
 fmcw_meas = fmcw_sys.FMCWMeasurement(meas_prop)
-# signal, second_output, seed1, seed2 = fmcw_meas.generate(dist_true, vel_true, t, return_seeds=True)
-# np.random.seed(6460)
 signal, second_output = fmcw_meas.generate(dist_true, vel_true, t)
 now = time.time()
 estimator = estimators.LorentzianRegressor(meas_prop)

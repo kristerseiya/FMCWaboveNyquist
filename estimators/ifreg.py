@@ -175,7 +175,6 @@ class IFWrappedNormalLikelihood(IFLikelihood, ObjectiveFunction):
             denom = denom + Zk
             numer = numer + Zk * ( (self.ifx-if_hat+k)/(self.if_var+extra_var) )
         nll = - np.sum( np.log(Z+MACHINE_EPSILON), axis=1) + len(self.t)/2*np.log(2*(self.if_var+extra_var))
-        # nll = - np.sum( np.log(Z+self.eps), axis=1) * 2*(self.if_var+extra_var)
         tmp = - numer / (denom + MACHINE_EPSILON)
         d_deriv = np.sum(tmp * d_deriv, axis=1)
         v_deriv = np.sum(tmp * v_deriv, axis=1)
@@ -187,7 +186,6 @@ class IFWrappedNormalLikelihood(IFLikelihood, ObjectiveFunction):
     
     def create_scheduler(self):
         return ExtraVarScheduler(self.if_var, init_var=0.1, m=300)
-        # return ExtraVarScheduler(self.if_var, init_var=0.01, m=30)
 
 class ExtraVarScheduler(Scheduler):
     def __init__(self, correct_var: float, init_var: float=0.01, m: int=70):
@@ -234,11 +232,6 @@ class IFShortestPath(IFLikelihood, ObjectiveFunction):
     def store_observations(self, t: np.ndarray, ifx: np.ndarray):
 
         assert (np.ndim(t) == 1) and (np.ndim(ifx) == 1)
-
-        # if self.meas_prop.is_zero_velocity() and ( (t[-1] + 3/self.sample_rate - t[0])<(self.meas_prop.Tchirp) ):
-        #     raise RuntimeError('not enough observations')
-        # elif not self.meas_prop.is_zero_velocity() and ( (t[-1] + 3/self.sample_rate - t[0])<(2*self.meas_prop.Tchirp) ):
-        #     raise RuntimeError('not enough observations')
         
         self.t = copy.deepcopy(t)
         self.ifx = copy.deepcopy(ifx)
@@ -257,7 +250,6 @@ class IFShortestPath(IFLikelihood, ObjectiveFunction):
             if_hat = self.if_generator.generate_freq(self.t, x[:,0], x[:,1], compute_jacobian=False, normalize_freq=True, aliased=True)
 
         shortest_path_length = np.sum((np.mod(self.ifx-if_hat+0.5,1)-0.5)**2, axis=1)
-        # nll = np.sum( -np.log(Z+self.eps), axis=1) * 2*(self.if_var+extra_var)
         return shortest_path_length
     
     def compute_gradient(self, x: np.ndarray):
@@ -371,7 +363,6 @@ class IFRegressor(Estimator):
         for k, idx_part in enumerate(idx_partitions):
             t_, mixed_signal_ = t[idx_part[0]:idx_part[1]], mixed_signal[idx_part[0]:idx_part[1]]
             tt, ifx = utils.estimate_if(t_, mixed_signal_, method='polar_discriminator', mirror=False)
-            # tt, ifx = tf_fit_utils.estimate_if(t, mixed_signal, method='reassignment', mirror=False)
             self.if_likelihood.store_observations(tt, ifx)
             
             if self.test_flag:
@@ -404,10 +395,10 @@ class IFRegressor(Estimator):
                 x_init_init = np.reshape(grid, (-1,2))
                 init_if_likelihood = IFShortestPath(self.meas_prop)
                 init_if_likelihood.store_observations(tt, ifx)
-                x_init, x_init_cost, n_evals1 = optimizer.gradient_descent_backtrack_linesearch(x_init_init, init_if_likelihood, 
+                x_init, x_init_cost = optimizer.gradient_descent_backtrack_linesearch(x_init_init, init_if_likelihood, 
                                                                                     max_n_iter=self.gd_max_n_iter,
                                                                                     alpha0=1, beta=0.1, c=1e-1,
-                                                                                    xtol=1e-4, track=False, get_n_evals=True)
+                                                                                    xtol=1e-4, track=False)
             elif self.init_step == 'none':
                 x_init = np.reshape(grid, (-1, 2))
                 x_init_cost = self.if_likelihood.evaluate(x_init)
@@ -422,12 +413,10 @@ class IFRegressor(Estimator):
                 subsamp_K = int(np.floor(len(ifx) / (int(np.ceil(B/fs)) * 10)))
                 init_if_likelihood = IFShortestPath(self.meas_prop)
                 init_if_likelihood.store_observations(tt[::subsamp_K], ifx[::subsamp_K])
-                # scheduler = self.if_likelihood.create_scheduler()
-                x_init, x_init_cost, n_evals1 = optimizer.gradient_descent_backtrack_linesearch(x_init_init, init_if_likelihood, 
+                x_init, x_init_cost = optimizer.gradient_descent_backtrack_linesearch(x_init_init, init_if_likelihood, 
                                                                                                 max_n_iter=self.gd_max_n_iter, 
                                                                                                 alpha0=1, beta=0.1, c=1e-1,
-                                                                                                xtol=1e-4, track=False, get_n_evals=True)
-                # self.if_likelihood.store_observations(tt, ifx)
+                                                                                                xtol=1e-4, track=False)
             
             if self.test_flag:
                 intermediate_results['x_init'] = copy.deepcopy(x_init)
@@ -445,17 +434,11 @@ class IFRegressor(Estimator):
                 else:
                     scheduler = None
                 if not self.test_flag:
-                    x_hat, x_hat_cost, n_evals2 = optimizer.gradient_descent_backtrack_linesearch(x_init, self.if_likelihood, 
+                    x_hat, x_hat_cost = optimizer.gradient_descent_backtrack_linesearch(x_init, self.if_likelihood, 
                                                                                         max_n_iter=self.gd_max_n_iter, 
                                                                                         xtol=1e-4, track=False,
                                                                                         alpha0=1, beta=0.1, c=1e-1,
-                                                                                        scheduler=scheduler, get_n_evals=True)
-                    # x_hat = np.array([x_hat[np.argmin(x_hat_cost)]])
-                    # x_hat, x_hat_cost = optimizer.gradient_descent(x_hat, self.if_likelihood,
-                    #                                                max_n_iter=100, stepsize=3e-2, track=False, 
-                    #                                                xtol=1e-20)
-                    # x_hat, x_hat_cost = optimizer.gradient_descent(x_init, self.if_likelihood, max_n_iter=self.gd_max_n_iter,
-                    #                                                stepsize=1e-2, xtol=1e-4, track=False, scheduler=scheduler)
+                                                                                        scheduler=scheduler)
                 else:
                     x_hat, x_hat_cost, gd_track = optimizer.gradient_descent_backtrack_linesearch(x_init, self.if_likelihood, 
                                                                                                 max_n_iter=self.gd_max_n_iter, 
@@ -470,7 +453,6 @@ class IFRegressor(Estimator):
                 max_v = self.meas_prop.get_max_v()
                 x_hat_final[0] = np.mod(x_hat_final[0], max_d)
                 x_hat_final[1] = np.mod(x_hat_final[1]+max_v, 2*max_v)-max_v
-                # self.total_n_evals = n_evals1 + n_evals2
 
             elif self.method == 'none':
                 if x_init.shape[0] > 1:
@@ -562,7 +544,6 @@ class IFRegressor(Estimator):
         for k, idx_part in enumerate(idx_partitions):
             t_, mixed_signal_ = t[idx_part[0]:idx_part[1]], mixed_signal[idx_part[0]:idx_part[1]]
             tt, ifx = utils.estimate_if(t_, mixed_signal_, method='polar_discriminator', mirror=False)
-            # tt, ifx = tf_fit_utils.estimate_if(t, mixed_signal, method='reassignment', mirror=False)
             self.if_likelihood.store_observations(tt, ifx)
             
             if self.test_flag:
@@ -592,12 +573,9 @@ class IFRegressor(Estimator):
             xhats = np.zeros((len(grid),2))
             costs = np.zeros((len(grid),))
             for i, x0 in enumerate(grid):
-                # res = minimize(obj_func, 
-                #                x0, jac=jac,
-                #                method="Nelder-Mead")
                 res = minimize(obj_func, 
                                x0, jac=jac,
-                               method="Newton-CG")
+                               method="BFGS")
                 xhats[i] = res.x
                 costs[i] = res.fun
             def obj_func(x):
@@ -607,7 +585,7 @@ class IFRegressor(Estimator):
             x_hat = xhats[np.argmin(costs)]
             res = minimize(obj_func, 
                             x_hat, jac=jac,
-                            method="Newton-CG")
+                            method="BFGS")
                 
             x_hat_finals[k] = res.x
         
@@ -616,7 +594,6 @@ class IFRegressor(Estimator):
         max_v = self.meas_prop.get_max_v()
         x_hat_final[0] = np.mod(x_hat_final[0], max_d)
         x_hat_final[1] = np.mod(x_hat_final[1]+max_v, 2*max_v)-max_v
-            # self.total_n_evals = n_evals1 + n_evals2
 
         if not self.test_flag:
             return_val = x_hat_final

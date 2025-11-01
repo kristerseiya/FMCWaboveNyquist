@@ -20,13 +20,6 @@ results_dir = os.path.join(utils.PROJECT_DIR, 'sim', 'd_est_sim_results')
 
 results_file = '102225002759_estimates_102225002759_seeds_comptime.npz'
 
-
-
-# plt.rcParams['text.usetex'] = True
-# plt.rcParams["font.family"] = "Times New Roman"
-# font = {'fontname':'Times New Roman'}
-# plt.rc('text.latex', preamble=r"\usepackage{bm}\boldmath\renewcommand{\seriesdefault}{\bfdefault}")
-
 plt.rcParams["font.family"] = "Times New Roman"
 font = {'fontname':'Times New Roman'}
 
@@ -51,13 +44,6 @@ print()
 results_dir = os.path.join(utils.PROJECT_DIR, 'sim', 'dv_est_sim_results')
 
 results_file = '102225003334_estimates_102225003334_seeds_comptime.npz'
-
-
-
-# plt.rcParams['text.usetex'] = True
-# plt.rcParams["font.family"] = "Times New Roman"
-# font = {'fontname':'Times New Roman'}
-# plt.rc('text.latex', preamble=r"\usepackage{bm}\boldmath\renewcommand{\seriesdefault}{\bfdefault}")
 
 plt.rcParams["font.family"] = "Times New Roman"
 font = {'fontname':'Times New Roman'}

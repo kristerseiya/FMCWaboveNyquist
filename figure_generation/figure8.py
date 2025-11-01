@@ -23,13 +23,10 @@ plt.rcParams["font.family"] = "Times New Roman"
 font = {'fontname':'Times New Roman'}
 plt.rc('text.latex', preamble=r"\usepackage{bm}\boldmath\renewcommand{\seriesdefault}{\bfdefault}")
 
-# param_name = 'tri_2e8_1000_5_lw1e5'
 param_name = 'tri_2e8_600_5'
-# param_name = 'sin_2e8_1000_5_lw1e5'
 meas_prop = fmcw_sys.import_meas_prop_from_config(utils.PARAMS_PATH, param_name)
 meas_prop.assume_zero_velocity = False
 meas_prop.complex_available = True
-# meas_prop.linewidth = 1e6
 
 dist_true = 300
 vel_true = 0
@@ -44,8 +41,6 @@ signal, second_output = fmcw_meas.generate(dist_true, vel_true, t)
 vmax = meas_prop.get_max_v()
 dmax = meas_prop.get_max_d()
 
-# estimator = estimators.get_estimators(meas_prop, ['snradjust_uniformgrid'])[0]
-# estimator = estimators.get_estimators(meas_prop, ['shortestpath_uniformgrid'])[0]
 key = {'gridgen_type':'optimal', 'method':'gradient_descent', 'init_step': 'none', 'ignore_quadrature':False, 'snr_adjustment':True, 'gd_max_n_iter':500}
 estimator = estimators.IFRegressor(meas_prop, **key, average=True)
 
@@ -126,12 +121,8 @@ for gdtrack in gdtracks:
 
 ax1.scatter(x_init[:,0], x_init[:,1], color='red', zorder=2, label='initial', s=30*size_mult)
 
-# ax2.scatter(x_init[:,0], x_init[:,1], color='red', zorder=2, label='initial', s=30)
-# ax2.scatter(x_hats[:,0], x_hats[:,1], color='blue', zorder=3, label='converged', s=20)
 ax2.scatter(gdtracks[:, 0, idx_part[0][0]], gdtracks[:, 1, idx_part[0][0]], color='red', zorder=2, label='start', s=30*size_mult**2)
 ax2.scatter(gdtracks[:, 0, idx_part[0][1]], gdtracks[:, 1, idx_part[0][1]], color='mediumpurple', zorder=3, label='end', s=20*size_mult**2)
-
-# ax2.scatter([x_hat[0],], [x_hat[1],], color='orange', zorder=4, label='optimal')
 
 ax3.scatter(gdtracks[:, 0, idx_part[1][0]], gdtracks[:, 1, idx_part[1][0]], color='mediumpurple', zorder=2, label='start', s=30*size_mult**2)
 ax3.scatter(gdtracks[:, 0, idx_part[1][1]], gdtracks[:, 1, idx_part[1][1]], color='mediumturquoise', zorder=3, label='end', s=20*size_mult**2)
@@ -174,8 +165,5 @@ ax3.set_ylabel('velocity (m/s)', fontsize=15*size_mult)
 ax3.set_xlabel('distance (m)', fontsize=15*size_mult)
 ax4.set_xlabel('distance (m)', fontsize=15*size_mult)
 ax4.set_ylabel('velocity (m/s)', fontsize=15*size_mult)
-# fig2 = plt.figure(2)
-# ax21 = fig2.add_subplot(111)
-# # ax21.contourf(uniform_grid2d[:,:,0], uniform_grid2d[:,:,1], grid_vals)
 
 plt.show()

@@ -42,10 +42,7 @@ trifreq = trif.generate_freq_x(t, 0, 0, normalize_freq=True)
 sinfreq = sinf.generate_freq_x(t, 0, 0, normalize_freq=True)
 ax1.plot(t, trifreq, linewidth=3, color='blue')
 l1 = ax2.plot(t, sinfreq, linewidth=3, color='blue')
-    
-# ax1.set_xlabel('time (s)', fontsize=20)
-# ax1.set_ylabel('frequency (Hz)', fontsize=20)
-# ax1.tick_params(axis='both', which='major', labelsize=17)
+
 ax1.get_xaxis().set_ticks([])
 ax1.get_yaxis().set_ticks([])
 
@@ -57,25 +54,15 @@ for val, letter in [(0, '0'), (2*T, '4\mu s')]:
 
 ax1.annotate('', xy=(0, 0), xytext=(2*T, 0.0),
              xycoords=('data', 'axes fraction'), arrowprops=dict(arrowstyle="<-", color='black'),
-        #      textcoords='offset points',
              ha='center', va='top', size=18)
 
-# ax1.annotate('', xy=(0, -0.1), xycoords='data', xytext=(1, -0.1), 
-#             arrowprops=dict(arrowstyle="<->", color='b'))
 ax1.annotate('', xy=(-0.0, 0), xytext=(-0.0, 2.5),
              xycoords=('axes fraction','data'), arrowprops=dict(arrowstyle="<->", color='black'),
-        #      textcoords='offset points',
              ha='center', va='top', size=18)
 
 ax1.annotate('$B$', xy=(-0.15, 1.25), xytext=(0, 0),
                 xycoords=('axes fraction','data'), textcoords='offset points',
                 ha='center', va='top', size=18)
-
-# labelpad = ax1.yaxis.labelpad + 35
-# for val, letter in [(-B/2/sample_rate, '-B/2'),  (B/2/sample_rate, 'B/2')]:
-#     ax1.annotate('${}$'.format(letter), xy=(0, val), xytext=(-labelpad, 0),
-#                 xycoords=('axes fraction','data'), textcoords='offset points',
-#                 ha='center', va='top', size=18)
 
 ax1.spines['top'].set_visible(False)
 ax1.spines['right'].set_visible(False)
@@ -95,36 +82,20 @@ for val, letter in [(0, '0'),  (2*T, '4\mu s')]:
 
 ax1.annotate('', xy=(0, 0), xytext=(2*T, 0.0),
              xycoords=('data', 'axes fraction'), arrowprops=dict(arrowstyle="<-", color='black'),
-        #      textcoords='offset points',
              ha='center', va='top', size=18)
 
-# ax1.annotate('', xy=(0, -0.1), xycoords='data', xytext=(1, -0.1), 
-#             arrowprops=dict(arrowstyle="<->", color='b'))
 ax1.annotate('', xy=(-0.0, 0), xytext=(-0.0, 2.5),
              xycoords=('axes fraction','data'), arrowprops=dict(arrowstyle="<->", color='black'),
-        #      textcoords='offset points',
              ha='center', va='top', size=18)
 
 ax1.annotate('$B$', xy=(-0.15, 1.25), xytext=(0, 0),
                 xycoords=('axes fraction','data'), textcoords='offset points',
                 ha='center', va='top', size=18)
 
-# labelpad = ax1.yaxis.labelpad + 35
-# for val, letter in [(-B/2/sample_rate, '-B/2'),  (B/2/sample_rate, 'B/2')]:
-#     ax1.annotate('${}$'.format(letter), xy=(0, val), xytext=(-labelpad, 0),
-#                 xycoords=('axes fraction','data'), textcoords='offset points',
-#                 ha='center', va='top', size=18)
-
 ax1.spines['top'].set_visible(False)
 ax1.spines['right'].set_visible(False)
 ax1.spines['bottom'].set_visible(False)
 ax1.spines['left'].set_visible(False)
-
-# font = {'fontname':'Times New Roman'}
-# ax1.text(T*0.65, 1.2, 'triangular modulation', **font, fontsize=20)
-# ax1.text(T*1.3, 2.2, 'sinusoidal modulation', **font, fontsize=20)
-# ax1.plot([T, T*1.2], [1.4, 1.925], color='black')
-# ax1.plot([T*1.6, T*1.35], [2.1, 1.98], color='black')
 
 ax1 = axes[1]
 ax2 = axes[3]
@@ -163,10 +134,7 @@ trifreq = trif.generate_freq_x(t, 0, 0, normalize_freq=True)
 sinfreq = sinf.generate_freq_x(t, 0, 0, normalize_freq=True)
 ax1.plot(t, trifreq, linewidth=3, color='dodgerblue')
 l3 = ax2.plot(t, sinfreq, linewidth=3, color='dodgerblue')
-    
-# ax1.set_xlabel('time (s)', fontsize=20)
-# ax1.set_ylabel('frequency (Hz)', fontsize=20)
-# ax1.tick_params(axis='both', which='major', labelsize=17)
+
 ax1.get_xaxis().set_ticks([])
 ax1.get_yaxis().set_ticks([])
 
@@ -178,25 +146,16 @@ for val, letter in [(0, '0'), (T, '10'), (2*T, '20\mu s')]:
 
 ax1.annotate('', xy=(0, 0), xytext=(2*T, 0.0),
              xycoords=('data', 'axes fraction'), arrowprops=dict(arrowstyle="<-", color='black'),
-        #      textcoords='offset points',
              ha='center', va='top', size=18)
 
-# ax1.annotate('', xy=(0, -0.1), xycoords='data', xytext=(1, -0.1), 
-#             arrowprops=dict(arrowstyle="<->", color='b'))
 ax1.annotate('', xy=(-0.0, 0), xytext=(-0.0, 2.5),
              xycoords=('axes fraction','data'), arrowprops=dict(arrowstyle="<->", color='black'),
-        #      textcoords='offset points',
              ha='center', va='top', size=18)
 
 ax1.annotate('$B$', xy=(-0.05, 1.25), xytext=(0, 0),
                 xycoords=('axes fraction','data'), textcoords='offset points',
                 ha='center', va='top', size=18)
 
-# labelpad = ax1.yaxis.labelpad + 35
-# for val, letter in [(-B/2/sample_rate, '-B/2'),  (B/2/sample_rate, 'B/2')]:
-#     ax1.annotate('${}$'.format(letter), xy=(0, val), xytext=(-labelpad, 0),
-#                 xycoords=('axes fraction','data'), textcoords='offset points',
-#                 ha='center', va='top', size=18)
 
 ax1.spines['top'].set_visible(False)
 ax1.spines['right'].set_visible(False)
@@ -215,36 +174,20 @@ for val, letter in [(0, '0'), (T, '10'), (2*T, '20\mu s')]:
 
 ax1.annotate('', xy=(0, 0), xytext=(2*T, 0.0),
              xycoords=('data', 'axes fraction'), arrowprops=dict(arrowstyle="<-", color='black'),
-        #      textcoords='offset points',
              ha='center', va='top', size=18)
 
-# ax1.annotate('', xy=(0, -0.1), xycoords='data', xytext=(1, -0.1), 
-#             arrowprops=dict(arrowstyle="<->", color='b'))
 ax1.annotate('', xy=(-0.0, 0), xytext=(-0.0, 2.5),
              xycoords=('axes fraction','data'), arrowprops=dict(arrowstyle="<->", color='black'),
-        #      textcoords='offset points',
              ha='center', va='top', size=18)
 
 ax1.annotate('$B$', xy=(-0.05, 1.25), xytext=(0, 0),
                 xycoords=('axes fraction','data'), textcoords='offset points',
                 ha='center', va='top', size=18)
 
-# labelpad = ax1.yaxis.labelpad + 35
-# for val, letter in [(-B/2/sample_rate, '-B/2'),  (B/2/sample_rate, 'B/2')]:
-#     ax1.annotate('${}$'.format(letter), xy=(0, val), xytext=(-labelpad, 0),
-#                 xycoords=('axes fraction','data'), textcoords='offset points',
-#                 ha='center', va='top', size=18)
-
 ax1.spines['top'].set_visible(False)
 ax1.spines['right'].set_visible(False)
 ax1.spines['bottom'].set_visible(False)
 ax1.spines['left'].set_visible(False)
-# font = {'fontname':'Times New Roman'}
-# ax1.text(T*0.65, 1.2, 'triangular modulation', **font, fontsize=20)
-# ax1.text(T*1.3, 2.2, 'sinusoidal modulation', **font, fontsize=20)
-# ax1.plot([T, T*1.2], [1.4, 1.925], color='black')
-# ax1.plot([T*1.6, T*1.35], [2.1, 1.98], color='black')
-# fig.tight_layout()
 
 
 fig.legend([l1, l2, l3], 

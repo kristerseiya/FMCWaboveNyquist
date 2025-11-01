@@ -55,19 +55,6 @@ if __name__ == "__main__":
     B = meas_prop.get_bandwidth()
     sample_rate = meas_prop.get_sample_rate()
     T = meas_prop.get_chirp_length()
-    
-    # d_interval = sample_rate/2/B*T*2*3e8/2
-    # print(d_interval)
-    # d_interval = np.arcsin(sample_rate/2/B)*T/np.pi*2*3e8/2*2
-    # print(d_interval)
-    # d_range, v_range = meas_prop.get_range()
-    # B = meas_prop.get_bandwidth()
-    # sample_rate = meas_prop.get_sample_rate()
-    # T = meas_prop.get_chirp_length()
-    # d_interval = (d_range[-1] - d_range[0])/9
-    # print(d_interval)
-    # exit()
-
 
     # get estimators
     n_estimator = len(config.estimator_names)

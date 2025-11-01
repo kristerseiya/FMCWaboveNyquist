@@ -30,8 +30,6 @@ if __name__ == "__main__":
 
     n_simulation = args.n_sim
     distance_arr = config.distance_arr
-    # measseeds_arr_buffer = multiprocessing.RawArray(np.ctypeslib.as_ctypes_type(int), len(distance_arr)*n_simulation)
-    # measseeds_arr = np.frombuffer(measseeds_arr_buffer, dtype=int).reshape((len(distance_arr), n_simulation))
     measseeds_arr = (np.random.rand(len(distance_arr), n_simulation)*(2**32-1)).astype(int)
 
     if not os.path.exists(os.path.join(this_dir, 'd_est_sim_results')):

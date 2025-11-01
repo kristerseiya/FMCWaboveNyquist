@@ -42,11 +42,9 @@ def short_time_fourier_transform(x, window, stride=1, sample_rate=1, real=False,
 def reassignment_method(x, window_length, hop_length, thres=0):
     t = np.arange(-window_length//2, window_length-window_length//2)
     h = np.cos(np.pi*t/window_length)**2
-    # dh = 2*(-np.sin(np.pi*t/window_length))*np.pi/window_length*h
     dh = 2*np.cos(np.pi*t/window_length)*(-np.sin(np.pi*t/window_length))*np.pi/window_length
-    # f = np.arange(0, 0.5-0.5/len(h), 1/len(h))
-    f, t, sh = short_time_fourier_transform(x, h, hop_length, zero_pad=0)#[:(len(h)-len(h)//2),:]
-    _, _, sdh = short_time_fourier_transform(x, dh, hop_length, zero_pad=0)#[:(len(h)-len(h)//2),:]
+    f, t, sh = short_time_fourier_transform(x, h, hop_length, zero_pad=0)
+    _, _, sdh = short_time_fourier_transform(x, dh, hop_length, zero_pad=0)
 
     ff = np.stack([f]*sh.shape[1], axis=1)
     valid = np.abs(sh) > thres
@@ -95,12 +93,6 @@ def second_order_reassignment_method(x, window_length, hop_length, thres=0):
     return tt, f, mags
 
 def ridge_detection(times, freqs, mags, gamma, c1, c2, n_survivor=7):
-    # mags = np.copy(mags)
-    # mags[np.isnan(mags)] = 0
-    # times = np.copy(times)
-    # times[np.isnan(times)] = 0
-    # freqs = np.copy(freqs)
-    # freqs[np.isnan(freqs)] = 0
     max_idx_col = np.argmax(mags, 1)
     survivors = np.zeros((n_survivor, mags.shape[1]), dtype=int)
     path_dist = np.zeros((n_survivor,))
@@ -122,12 +114,8 @@ def ridge_detection(times, freqs, mags, gamma, c1, c2, n_survivor=7):
     diff1 /= (times[valididx[0],1]-times[valididx[0],0])
     dist_metric = np.reshape(path_dist, (-1,1)) - 20*np.log10(mags[valididx,1]+1e-10) + np.minimum(np.abs(diff1), np.abs(diff1-gamma))*c1
     bestidx = np.argpartition(dist_metric.flatten(), n_survivor)[:n_survivor]
-    # print(dist_metric)
-    # print(dist_metric.flatten()[bestidx])
     
     bestidx = np.unravel_index(bestidx, dist_metric.shape)
-    # print(dist_metric[bestidx[0], bestidx[1]])
-    # exit()
     new_survivors = np.zeros((n_survivor, 2))
     for n in range(n_survivor):
         new_survivors[n,:1] = survivors[bestidx[0][n],:1]

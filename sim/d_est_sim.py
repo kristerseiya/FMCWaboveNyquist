@@ -43,8 +43,6 @@ if __name__ == "__main__":
     else:
         n_simulation = args.n_sim
         distance_arr = config.distance_arr
-        # measseeds_arr_buffer = multiprocessing.RawArray(np.ctypeslib.as_ctypes_type(int), len(distance_arr)*n_simulation)
-        # measseeds_arr = np.frombuffer(measseeds_arr_buffer, dtype=int).reshape((len(distance_arr), n_simulation))
         measseeds_arr = (np.random.rand(len(distance_arr), n_simulation)*(2**32-1)).astype(int)
         
     n_cycle = config.n_cycle
@@ -72,13 +70,6 @@ if __name__ == "__main__":
 
             np.random.seed(measseeds_arr[d_idx, n])
             signal, second_output = fmcw_meas.generate(dist_true, 0, t)
-            # if args.seeds is None:
-            #     signal, second_output, seed = fmcw_meas.generate(dist_true, 0, t, return_seed=True)
-            #     measseeds_arr[d_idx, n] = seed
-            # else:
-            #     signal, second_output = fmcw_meas.generate(dist_true, 0, t, 
-            #                                                random_seed=measseeds_arr[d_idx, n],
-            #                                                return_seed=False)
 
             for i, estimator in enumerate(estimators):
                 if isinstance(estimator, presets.Estimator):

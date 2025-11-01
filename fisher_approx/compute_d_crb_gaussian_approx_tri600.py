@@ -53,7 +53,6 @@ for i, distance in enumerate(distance_arr):
     cov_1st_row = np.zeros((len(t)))
     cov_1st_row[0] = 4*np.pi*linewidth/sample_rate
     cov_1st_row[0] += diff_prdjected_noise_freceht_var[i]
-    # cov_1st_row[1] = -1/2*diff_prdjected_noise_freceht_var[i]
     cov_1st_row[1] = diff_prdjected_noise_freceht_corr[i]
     tau = distance*2/3e8
     m = int(np.floor(tau*sample_rate))
@@ -63,7 +62,6 @@ for i, distance in enumerate(distance_arr):
     cov = toeplitz(cov_1st_row)
     d_cov_1st_row = np.zeros((len(t)))
     d_cov_1st_row[0] = d_diff_prdjected_noise_freceht_var[i]
-    # d_cov_1st_row[1] = -1/2*d_diff_prdjected_noise_freceht_var[i]
     d_cov_1st_row[1] = d_diff_prdjected_noise_freceht_corr[i]
     d_cov_1st_row[m] += 2*np.pi*linewidth*2/3e8
     if (m+1) < len(t):
@@ -72,9 +70,7 @@ for i, distance in enumerate(distance_arr):
     covinv = np.linalg.inv(cov)
     if_func, d_deriv, _ = modf.generate_freq(t, distance, 0, compute_jacobian=True, normalize_freq=True)
     tmp = d_cov@covinv
-    # fisher_mat = (2*np.pi)**2 * (d_deriv @ covinv @ d_deriv + 1/2*np.sum(d_cov*covinv) + 1/2*np.sum(tmp*tmp.T))
-    # fisher_mat = (2*np.pi)**2 * (d_deriv @ covinv @ d_deriv + np.sum(d_cov*covinv) + 1/2*np.sum(tmp*tmp.T))
-    fisher_mat =  d_deriv@covinv@d_deriv * (2*np.pi)**2 # + np.sum(d_cov*covinv) + 1/2*np.sum(tmp*tmp.T)
+    fisher_mat =  d_deriv@covinv@d_deriv * (2*np.pi)**2
     d_crb_approx[i] = 1/fisher_mat
     fisher_mat =  fisher_mat + np.sum(d_cov*covinv) + 1/2*np.sum(tmp*tmp.T)
     d_crb_approx_full[i] = 1/fisher_mat

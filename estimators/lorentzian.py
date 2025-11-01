@@ -28,7 +28,6 @@ class Lorentzian_Regression_SquareError(optimizer.ObjectiveFunction):
         lorentz_func = x[:,[1]]*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x[:,[0]])**2 ) + \
                             x[:,[1]]*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x[:,[0]]+1)**2 ) + \
                             x[:,[1]]*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x[:,[0]]-1)**2 ) + self.shot_noise_var
-        # lorentz_func = x[:,[1]]*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x[:,[0]])**2 ) + self.shot_noise_var
         squared_error = np.sum( (self.periodogram - lorentz_func)**2, axis=-1)
         return squared_error
     
@@ -38,13 +37,10 @@ class Lorentzian_Regression_SquareError(optimizer.ObjectiveFunction):
         lorentz_func = x1*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x0)**2 ) + \
                         x1*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x0+1)**2 ) + \
                         x1*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x0-1)**2 ) + self.shot_noise_var
-        # lorentz_func = x1*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x0)**2 ) + self.shot_noise_var
         diff = (lorentz_func - self.periodogram)
         j0 = - x1*self.linewidth / ( np.pi ) * 2*(x0-self.freq_arr) / ( (self.freq_arr - x0)**2 + self.linewidth**2 )**2 \
             - x1*self.linewidth / ( np.pi ) * 2*(x0-1-self.freq_arr) / ( (self.freq_arr - x0+1)**2 + self.linewidth**2 )**2 \
                 - x1*self.linewidth / ( np.pi ) * 2*(x0+1-self.freq_arr) / ( (self.freq_arr - x0-1)**2 + self.linewidth**2 )**2
-        # j0 = - x1*self.linewidth / ( np.pi ) * 2*(x0-self.freq_arr) / ( (self.freq_arr - x0)**2 + self.linewidth**2 )**2
-        # j1 = self.linewidth / ( (self.freq_arr - x0)**2 + self.linewidth**2 )
         j1 = self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x0)**2 ) + \
                         self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x0+1)**2 ) + \
                         self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x0-1)**2 )
@@ -71,7 +67,6 @@ class Lorentzian_Regression_SquareError2(optimizer.ObjectiveFunction):
         lorentz_func = np.exp(x[:,[1]])*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x[:,[0]])**2 ) + \
                             np.exp(x[:,[1]])*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x[:,[0]]+1)**2 ) + \
                             np.exp(x[:,[1]])*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x[:,[0]]-1)**2 ) + self.shot_noise_var
-        # lorentz_func = x[:,[1]]*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x[:,[0]])**2 ) + self.shot_noise_var
         squared_error = np.sum( (self.periodogram - lorentz_func)**2, axis=-1)
         return squared_error
     
@@ -81,12 +76,10 @@ class Lorentzian_Regression_SquareError2(optimizer.ObjectiveFunction):
         lorentz_func = np.exp(x1)*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x0)**2 ) + \
                         np.exp(x1)*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x0+1)**2 ) + \
                         np.exp(x1)*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x0-1)**2 ) + self.shot_noise_var
-        # lorentz_func = x1*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x0)**2 ) + self.shot_noise_var
         diff = (lorentz_func - self.periodogram)
         j0 = - np.exp(x1)*self.linewidth / ( np.pi ) * 2*(x0-self.freq_arr) / ( (self.freq_arr - x0)**2 + self.linewidth**2 )**2 \
             - np.exp(x1)*self.linewidth / ( np.pi ) * 2*(x0-1-self.freq_arr) / ( (self.freq_arr - x0+1)**2 + self.linewidth**2 )**2 \
                 - np.exp(x1)*self.linewidth / ( np.pi ) * 2*(x0+1-self.freq_arr) / ( (self.freq_arr - x0-1)**2 + self.linewidth**2 )**2
-        # j0 = - x1*self.linewidth / ( np.pi ) * 2*(x0-self.freq_arr) / ( (self.freq_arr - x0)**2 + self.linewidth**2 )**2
         j1 = np.exp(x1)*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x0)**2 ) + \
                 np.exp(x1)*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x0+1)**2 ) + \
                 np.exp(x1)*self.linewidth / ( np.pi ) / ( self.linewidth**2 + (self.freq_arr-x0-1)**2 )
@@ -110,9 +103,7 @@ def lorentzian_regression(signal: np.ndarray, meas_prop: FMCWMeasurementProperti
                        [freq_arr[np.argmax(periodogram)]+0.5/N, (np.amax(periodogram)-shot_var)*linewidth*np.pi]])
     
     cost_lorentz = Lorentzian_Regression_SquareError(signal, meas_prop, shot_var)
-                
-    
-    # x_hat, x_hat_cost = optimizer.gradient_descent_backtrack_linesearch(x_init, cost_lorentz, max_n_iter=500, track=False, xtol=1e-7, c=1e-4, alpha0=1e-4, beta=0.1)
+
     x_hat, x_hat_cost = optimizer.gradient_descent_backtrack_linesearch(x_init, cost_lorentz, max_n_iter=500, track=False, xtol=1e-7, c=1e-4, alpha0=1e-4, beta=0.1)
     x_hat_final = x_hat[np.argmin(x_hat_cost)]
     x_hat_final[0] = (np.mod(x_hat_final[0]+0.5,1)-0.5) * sample_rate
@@ -132,9 +123,6 @@ def lorentzian_regression_faster(signal: np.ndarray, meas_prop: FMCWMeasurementP
     x_init = np.array([[freq_arr[np.argmax(periodogram)], (np.amax(periodogram)-shot_var)*linewidth*np.pi],
                        [freq_arr[np.argmax(periodogram)]-0.5/N, (np.amax(periodogram)-shot_var)*linewidth*np.pi],
                        [freq_arr[np.argmax(periodogram)]+0.5/N, (np.amax(periodogram)-shot_var)*linewidth*np.pi]])
-    # x_init = np.array([[freq_arr[np.argmax(periodogram)], np.log((np.amax(periodogram)-shot_var)*linewidth*np.pi)],
-    #                    [freq_arr[np.argmax(periodogram)]-0.5/N, np.log((np.amax(periodogram)-shot_var)*linewidth*np.pi)],
-    #                    [freq_arr[np.argmax(periodogram)]+0.5/N, np.log((np.amax(periodogram)-shot_var)*linewidth*np.pi)]])
     
     cost_lorentz = Lorentzian_Regression_SquareError(signal, meas_prop, shot_var)
                 
@@ -177,12 +165,9 @@ def lorentzian_fitting(t: np.ndarray, signal: np.ndarray, linewidth: float|None=
     
     if (meas_prop is None) or (meas_prop.complex_available == False):
         periodogram = periodogram[:(N-N//2)]
-        # f = np.fft.fftfreq(N, 1/sample_rate)
         f = np.arange(0, sample_rate-sample_rate/N/2, sample_rate/N) / sample_rate
         f = f[:(N-N//2)]
-        # linewidth = 2*np.pi*linewidth #/ (2*np.pi)**2
     else:
-        # f = np.fft.fftfreq(N, 1/sample_rate)
         f = np.arange(0, sample_rate-sample_rate/N/2, sample_rate/N) / sample_rate
 
     success = True
@@ -194,9 +179,7 @@ def lorentzian_fitting(t: np.ndarray, signal: np.ndarray, linewidth: float|None=
             x1: amplitude^2
             x2: linewidth
             '''
-            # return x1*x2 / ( (2*np.pi)**2 * (f - x0)**2 + x2**2 ) + awgn_var*N #+ x1*x2 / ( (2*np.pi)**2 * (fmax - x0)**2 + x2**2 )
             return x1*x2 / ( np.pi ) / ( x2**2 + (f-x0)**2 ) * N**2 + shot_var
-        #x0 = np.array([f[np.argmax(periodogram)], np.amax(periodogram-shot_var*N)*linewidth, linewidth])
         x_init = np.array([f[np.argmax(periodogram)], (np.amax(periodogram)-shot_var)*linewidth/(N**2)*np.pi, linewidth])
 
         x_lb = np.array([np.amin(f), 0, 0])
@@ -214,7 +197,6 @@ def lorentzian_fitting(t: np.ndarray, signal: np.ndarray, linewidth: float|None=
             x0: beat frequency
             x1: amplitude
             '''
-            # return x1*linewidth / ( (2*np.pi)**2 * (f - x0)**2 + linewidth**2 ) + shot_var*N #+ x1*linewidth / ( (2*np.pi)**2 * (fmax - x0)**2 + linewidth**2 )
             return x1*linewidth / ( np.pi ) / ( linewidth**2 + (f-x0)**2 ) * N**2 + shot_var
         x_init = np.array([f[np.argmax(periodogram)], (np.amax(periodogram)-shot_var)*linewidth/(N**2)*np.pi])
 
@@ -263,7 +245,6 @@ def max_periodogram(t: np.ndarray, signal: np.ndarray, method='fine', meas_prop:
         periodogram = periodogram[:(N-N//2)]
         f = np.fft.fftfreq(N, 1/sample_rate)
         f = f[:(N-N//2)]
-        # linewidth = 2*np.pi*linewidth #/ (2*np.pi)**2
     else:
         f = np.fft.fftfreq(N, 1/sample_rate)
 
@@ -280,7 +261,6 @@ def max_periodogram(t: np.ndarray, signal: np.ndarray, method='fine', meas_prop:
             # scipy bracket
             xa, xb, xc, _, _, _, _ = bracket(lambda f: -np.abs(np.exp(1j * 2*np.pi * f * t) @ signal)**2, xa=f[max_idx-1], xb=f[max_idx])
             brckt = (xa, xb, xc)
-            # bracket = (freqs[np.argmax(pdgm)-1], freqs[np.argmax(pdgm)], freqs[np.argmax(pdgm)+1])
 
         try:
             opt_res = minimize_scalar(lambda f: -np.abs(np.exp(1j * 2*np.pi * f * t) @ signal)**2, bracket=brckt, method='brent')
@@ -335,11 +315,6 @@ class LorentzianRegressor(Estimator):
         d_nyquist = self.sample_rate / 2 / (self.bandwidth / self.Tchirp) * 3e8 / 2
         v_nyquist = self.sample_rate / 2 * (self.lambd_c) / 2
 
-        # meas_start = (tau + 10/self.sample_rate)
-        # meas_end = self.Tchirp
-        # meas1_idx = (t > meas_start) * (t < meas_end)
-        # meas2_idx = (t > (self.Tchirp + meas_start)) * (t < (self.Tchirp + meas_end))
-
         meas1_idx, meas2_idx = self.meas_prop.where_is_constant_beat_frequency(t, 120)
         meas1_idx = (t>=0) * (t<self.Tchirp)
         meas2_idx = (t>=self.Tchirp) * (t<(2*self.Tchirp))
@@ -361,14 +336,6 @@ class LorentzianRegressor(Estimator):
                 lorenz_param2 = lorentzian_regression_faster(mixed_signal[meas2_idx], self.meas_prop, shot_var=shot_var)
                 success2 = True
                 beat_freq2 = lorenz_param2[0] / self.sample_rate
-            # lorenz_param1 = lorentzian_fitting(t, mixed_signal[meas1_idx], self.meas_prop.linewidth, 
-            #            fit_linewidth=False, shot_var=shot_var, meas_prop=self.meas_prop)[0]
-            # success1 = True
-            # beat_freq1 = lorenz_param1[0] / self.sample_rate
-            # lorenz_param2 = lorentzian_fitting(t, mixed_signal[meas2_idx], self.meas_prop.linewidth, 
-            #            fit_linewidth=False, shot_var=shot_var, meas_prop=self.meas_prop)[0]
-            # success2 = True
-            # beat_freq2 = lorenz_param2[0] / self.sample_rate
             
         if self.assume_zero_velocity and success1 and success2:
             gamma = self.bandwidth / self.Tchirp
@@ -387,17 +354,6 @@ class LorentzianRegressor(Estimator):
                     if (freq1 - freq2) < 0:
                         freq1 += 1
                         freq2 -= 1
-                    # case2 = ( (freq1 + freq2) > (0.5) ) * ( (freq1 - freq2) >= 0 )
-                    # case3 = ( (freq1 + freq2) > (0.5) ) * ( (freq1 - freq2) < 0 )
-                    # case4 = ( (freq1 + freq2) < -(0.5) ) * ( (freq1 - freq2) >= 0 )
-                    # case5 = ( (freq1 + freq2) < -(0.5) ) * ( (freq1 - freq2) < 0 )
-                    # freq1[case2] -= 1
-                    # freq2[case3] -= 1
-                    # freq2[case4] += 1
-                    # freq1[case5] += 1
-                    # case6 = ( (freq1 - freq2) < 0 )
-                    # freq1[case6] += 1
-                    # freq2[case6] -= 1
             else:
                 freq1 = beat_freq1
                 freq2 = -beat_freq2
@@ -421,17 +377,6 @@ class LorentzianRegressor(Estimator):
                     if (freq1 - freq2) < 0:
                         freq1 += 1
                         freq2 -= 1
-                    # case2 = ( (freq1 + freq2) > (0.5) ) * ( (freq1 - freq2) >= 0 )
-                    # case3 = ( (freq1 + freq2) > (0.5) ) * ( (freq1 - freq2) < 0 )
-                    # case4 = ( (freq1 + freq2) < -(0.5) ) * ( (freq1 - freq2) >= 0 )
-                    # case5 = ( (freq1 + freq2) < -(0.5) ) * ( (freq1 - freq2) < 0 )
-                    # freq1[case2] -= 1
-                    # freq2[case3] -= 1
-                    # freq2[case4] += 1
-                    # freq1[case5] += 1
-                    # case6 = ( (freq1 - freq2) < 0 )
-                    # freq1[case6] += 1
-                    # freq2[case6] -= 1
             else:
                 freq1 = beat_freq1
                 freq2 = -beat_freq2
@@ -493,11 +438,6 @@ class OracleLorentzianRegressor(OracleEstimator):
         v_nyquist = self.sample_rate / 2 * (self.lambd_c) / 2
         tau = distance * 2 / 3e8 
 
-        # meas_start = (tau + 10/self.sample_rate)
-        # meas_end = self.Tchirp
-        # meas1_idx = (t > meas_start) * (t < meas_end)
-        # meas2_idx = (t > (self.Tchirp + meas_start)) * (t < (self.Tchirp + meas_end))
-
         cbf_region1, cbf_region2 = self.meas_prop.where_is_constant_beat_frequency(t, distance)
         meas1_idx = cbf_region1
         meas2_idx = cbf_region2
@@ -516,15 +456,11 @@ class OracleLorentzianRegressor(OracleEstimator):
         if self.assume_zero_velocity and success1 and success2:
             gamma = self.bandwidth / self.Tchirp
             if self.complex_available:
-                # k = int(np.floor(distance/(d_nyquist*2)+1/2))
-                # freq1 = beat_freq1 + k
                 k1 = int(np.floor(distance/(d_nyquist*2)+0/(v_nyquist*2)+1/2))
                 k2 = int(np.floor(distance/(d_nyquist*2)-0/(v_nyquist*2)+1/2))
                 freq1 = beat_freq1 + k1
                 freq2 = -(beat_freq2 - k2)
             else:
-                # k = int(np.floor(distance/d_nyquist))
-                # freq1 = utils.unmirror(beat_freq1, 0, 0.5, n=k)
                 k1 = int(np.floor(distance/d_nyquist+0/v_nyquist))
                 k2 = int(np.floor(distance/d_nyquist-0/v_nyquist))
                 freq1 = utils.unmirror(beat_freq1, 0, 0.5, n=k1)
@@ -601,11 +537,6 @@ class ConstantFrequencyEstimator(OracleEstimator):
         v_nyquist = self.sample_rate / 2 * (self.lambd_c) / 2
         tau = distance * 2 / 3e8 
 
-        # meas_start = (tau + 10/self.sample_rate)
-        # meas_end = self.Tchirp
-        # meas1_idx = (t > meas_start) * (t < meas_end)
-        # meas2_idx = (t > (self.Tchirp + meas_start)) * (t < (self.Tchirp + meas_end))
-
         cbf_region1, cbf_region2 = self.meas_prop.where_is_constant_beat_frequency(t, distance)
         meas1_idx = cbf_region1
         meas2_idx = cbf_region2
@@ -632,15 +563,11 @@ class ConstantFrequencyEstimator(OracleEstimator):
         if self.assume_zero_velocity and success1 and success2:
             gamma = self.bandwidth / self.Tchirp
             if self.complex_available:
-                # k = int(np.floor(distance/(d_nyquist*2)+1/2))
-                # freq1 = beat_freq1 + k
                 k1 = int(np.floor(distance/(d_nyquist*2)+0/(v_nyquist*2)+1/2))
                 k2 = int(np.floor(distance/(d_nyquist*2)-0/(v_nyquist*2)+1/2))
                 freq1 = beat_freq1 + k1
                 freq2 = -(beat_freq2 - k2)
             else:
-                # k = int(np.floor(distance/d_nyquist))
-                # freq1 = utils.unmirror(beat_freq1, 0, 0.5, n=k)
                 k1 = int(np.floor(distance/d_nyquist+0/v_nyquist))
                 k2 = int(np.floor(distance/d_nyquist-0/v_nyquist))
                 freq1 = utils.unmirror(beat_freq1, 0, 0.5, n=k1)

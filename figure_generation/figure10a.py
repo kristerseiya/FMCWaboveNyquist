@@ -91,22 +91,17 @@ estimate_error = estimate_arr - np.expand_dims(dv_arr, axis=-2)
 estimate_rmse = np.sqrt(np.mean((estimate_error)**2,axis=-2))
 estimate_rmse_ = (estimate_rmse[:,:,0]<10) * (estimate_rmse[:,:,1]<10)
 
-# d_est_smooth = scipy.signal.convolve(estimate_rmse[:,:,0], np.ones((5,5))/25, mode='same')
 estimate_rmse[:,:,0] = scipy.signal.convolve(estimate_rmse[:,:,0], np.ones((2,2))/4, mode='same')
 estimate_rmse[:,:,1] = scipy.signal.convolve(estimate_rmse[:,:,1], np.ones((2,2))/4, mode='same')
-# contour1 = ax1.pcolormesh(dd, vv, estimate_rmse[:,:,0], cmap='plasma')
-# contour2 = ax2.pcolormesh(dd, vv, estimate_rmse[:,:,1], cmap='plasma')
 contour3 = ax3.pcolormesh(dd, vv, estimate_rmse_, cmap='Greens', vmin=-0.3, vmax=1.3)
 
 contour1 = ax1.pcolormesh(dd, vv, np.log10(estimate_rmse[:,:,0]), cmap='plasma', vmin=-3.5, vmax=2.5)
 contour2 = ax2.pcolormesh(dd, vv, np.log10(estimate_rmse[:,:,1]), cmap='plasma', vmin=-3.5, vmax=2.5)
-# contour3 = ax3.pcolormesh(dd, vv, np.log10(estimate_rmse_), cmap='Greens', vmin=-0.3, vmax=1.3)
 
 divider1 = make_axes_locatable(ax1)
 cax1 = divider1.append_axes('right', size='5%', pad=0.05)
 cbar=fig.colorbar(contour1, cax=cax1, orientation='vertical')
 cbar.ax.tick_params(labelsize=2*10)
-# cbar.ax.set_ylabel("RMSE (m)", fontsize=25)
 cbar.ax.set_yticks([-3,-2,-1,0,1,2])
 cbar.ax.set_yticklabels([1e-3,1e-2,1e-1,1,1e1,1e2])
 divider2 = make_axes_locatable(ax2)
@@ -144,8 +139,6 @@ estimate_rmse_ = (estimate_rmse[:,:,0]<10) * (estimate_rmse[:,:,1]<10)
 
 estimate_rmse[:,:,0] = scipy.signal.convolve(estimate_rmse[:,:,0], np.ones((2,2))/4, mode='same')
 estimate_rmse[:,:,1] = scipy.signal.convolve(estimate_rmse[:,:,1], np.ones((2,2))/4, mode='same')
-# contour4 = ax4.pcolormesh(dd, vv, estimate_rmse[:,:,0], cmap='plasma')
-# contour5 = ax5.pcolormesh(dd, vv, estimate_rmse[:,:,1], cmap='plasma')
 contour6 = ax6.pcolormesh(dd, vv, estimate_rmse_, cmap='Greens', vmin=-0.3, vmax=1.3)
 
 contour4 = ax4.pcolormesh(dd, vv, np.log10(estimate_rmse[:,:,0]), cmap='plasma', vmin=-3.5, vmax=2.5)
@@ -195,11 +188,8 @@ estimate_error = estimate_arr - np.expand_dims(dv_arr, axis=-2)
 estimate_rmse = np.sqrt(np.mean((estimate_error)**2,axis=-2))
 estimate_rmse_ = (estimate_rmse[:,:,0]<10) * (estimate_rmse[:,:,1]<10)
 
-# d_est_smooth = scipy.signal.convolve(estimate_rmse[:,:,0], np.ones((5,5))/25, mode='same')
 estimate_rmse[:,:,0] = scipy.signal.convolve(estimate_rmse[:,:,0], np.ones((2,2))/4, mode='same')
 estimate_rmse[:,:,1] = scipy.signal.convolve(estimate_rmse[:,:,1], np.ones((2,2))/4, mode='same')
-# contour4 = ax7.pcolormesh(dd, vv, estimate_rmse[:,:,0], cmap='plasma')
-# contour5 = ax8.pcolormesh(dd, vv, estimate_rmse[:,:,1], cmap='plasma')
 contour6 = ax9.pcolormesh(dd, vv, estimate_rmse_, cmap='Greens', vmin=-0.3, vmax=1.3)
 
 contour4 = ax7.pcolormesh(dd, vv, np.log10(estimate_rmse[:,:,0]), cmap='plasma', vmin=-3.5, vmax=2.5)
@@ -224,243 +214,35 @@ if crb_file_path is not None:
         crb_d = crb_data['distance']
         ax1.plot(crb_d, np.sqrt(crb), linewidth=3, color='red', linestyle='--')
 
-# ax1.set_zscale('log')
-# ax1.legend()
 ax1.set_xlabel('distance (m)', fontsize=12*3, **font)
 ax1.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# ax1.set_title('Distance RMSE', fontsize=12*3, **font)
 ax1.tick_params(axis='both', which='major', labelsize=10*3)
 ax2.set_xlabel('distance (m)', fontsize=12*3, **font)
 ax2.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# ax2.set_title('Veloctiy RMSE', fontsize=12*3, **font)
 ax2.tick_params(axis='both', which='major', labelsize=10*3)
 ax3.set_xlabel('distance (m)', fontsize=12*3, **font)
 ax3.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# ax3.set_title('RMSE < 10 ($m$ or $m/s$)', fontsize=12*3, **font)
 ax3.tick_params(axis='both', which='major', labelsize=10*3)
 
 ax4.set_xlabel('distance (m)', fontsize=12*3, **font)
 ax4.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# ax4.set_title('Distance RMSE', fontsize=12*3, **font)
 ax4.tick_params(axis='both', which='major', labelsize=10*3)
 ax5.set_xlabel('distance (m)', fontsize=12*3, **font)
 ax5.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# ax5.set_title('Veloctiy RMSE', fontsize=12*3, **font)
 ax5.tick_params(axis='both', which='major', labelsize=10*3)
 ax6.set_xlabel('distance (m)', fontsize=12*3, **font)
 ax6.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# ax6.set_title('RMSE < 10 ($m$ and $m/s$)', fontsize=12*3, **font)
 ax6.tick_params(axis='both', which='major', labelsize=10*3)
 
 ax7.set_xlabel('distance (m)', fontsize=12*3, **font)
 ax7.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# ax4.set_title('Distance RMSE', fontsize=12*3, **font)
 ax7.tick_params(axis='both', which='major', labelsize=10*3)
 ax8.set_xlabel('distance (m)', fontsize=12*3, **font)
 ax8.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# ax5.set_title('Veloctiy RMSE', fontsize=12*3, **font)
 ax8.tick_params(axis='both', which='major', labelsize=10*3)
 ax9.set_xlabel('distance (m)', fontsize=12*3, **font)
 ax9.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# ax6.set_title('RMSE < 10 ($m$ and $m/s$)', fontsize=12*3, **font)
 ax9.tick_params(axis='both', which='major', labelsize=10*3)
-
-# fig.suptitle('Joint Estimation (Triangular Modulation, $T=2\mu s$)')
-
-# ifreg_filekey = ('102124065331_0_estimates.npz','wn_snradjust_lattice')
-# lorentz_filekey = ('102124065331_0_estimates.npz','freqavg')
-# mf_filekey = ('100625033815_estimates_100625033815_seeds_mf.npz','matchedfilter2d_optim')
-
-# # crb_file_path = os.path.join(this_dir, '..', 'crb_v4', 'd_crb_approx.npz' )
-# # crb_key = 'crb_approx'
-# crb_file_path = None
-# crb_key = None
-
-# ax1 = axes[3,0]
-# ax2 = axes[4,0]
-# ax3 = axes[5,0]
-# ax4 = axes[3,1]
-# ax5 = axes[4,1]
-# ax6 = axes[5,1]
-# ax7 = axes[3,2]
-# ax8 = axes[4,2]
-# ax9 = axes[5,2]
-
-# resfile = lorentz_filekey[0]
-# results = np.load(os.path.join(results_dir, resfile))
-# distance_arr = results['distance']
-# velocity_arr = results['velocity']
-# dd, vv = np.meshgrid(distance_arr, velocity_arr, indexing='ij')
-# dv_arr = np.stack([dd,vv],axis=-1)
-# n_sim = results['n_simulation']
-# print(n_sim)
-# max_d = np.amax(distance_arr)
-
-# estimator_key = lorentz_filekey[1]
-# estimate_arr = results['estimator_'+estimator_key]
-# for i in range(estimate_arr.shape[0]):
-#         for j in range(estimate_arr.shape[1]):
-#                 for n in range(estimate_arr.shape[2]):
-#                         if np.all(estimate_arr[i,j,n]==np.array([-111,-111])):
-#                                 estimate_arr[i,j,n] = np.array([max_d, 0])
-
-# print(f"{estimator_key:s}, {results['param_name']:s}")
-
-# estimate_error = estimate_arr - np.expand_dims(dv_arr, axis=-2)
-# estimate_rmse = np.sqrt(np.mean((estimate_error)**2,axis=-2))
-# estimate_rmse_ = (estimate_rmse[:,:,0]<10) * (estimate_rmse[:,:,1]<10)
-
-# # d_est_smooth = scipy.signal.convolve(estimate_rmse[:,:,0], np.ones((5,5))/25, mode='same')
-# contour1 = ax1.pcolormesh(dd, vv, estimate_rmse[:,:,0], cmap='plasma')
-# contour2 = ax2.pcolormesh(dd, vv, estimate_rmse[:,:,1], cmap='plasma')
-# contour3 = ax3.pcolormesh(dd, vv, estimate_rmse_, cmap='Greens', vmin=-0.3, vmax=1.3)
-
-# divider1 = make_axes_locatable(ax1)
-# cax1 = divider1.append_axes('right', size='5%', pad=0.05)
-# cbar=fig.colorbar(contour1, cax=cax1, orientation='vertical')
-# cbar.ax.tick_params(labelsize=2*10)
-# divider2 = make_axes_locatable(ax2)
-# cax2 = divider2.append_axes('right', size='5%', pad=0.05)
-# cbar=fig.colorbar(contour2, cax=cax2, orientation='vertical')
-# cbar.ax.tick_params(labelsize=2*10)
-
-# resfile = ifreg_filekey[0]
-# results = np.load(os.path.join(results_dir, resfile))
-# distance_arr = results['distance']
-# velocity_arr = results['velocity']
-# dd, vv = np.meshgrid(distance_arr, velocity_arr, indexing='ij')
-# dv_arr = np.stack([dd,vv],axis=-1)
-# n_sim = results['n_simulation']
-# print(n_sim)
-# max_d = np.amax(distance_arr)
-
-# estimator_key = ifreg_filekey[1]
-# estimate_arr = results['estimator_'+estimator_key]
-# for i in range(estimate_arr.shape[0]):
-#         for j in range(estimate_arr.shape[1]):
-#                 for n in range(estimate_arr.shape[2]):
-#                         if np.all(estimate_arr[i,j,n]==np.array([-111,-111])):
-#                                 estimate_arr[i,j,n] = np.array([max_d, 0])
-
-# print(f"{estimator_key:s}, {results['param_name']:s}")
-
-# estimate_error = estimate_arr - np.expand_dims(dv_arr, axis=-2)
-# estimate_rmse = np.sqrt(np.mean((estimate_error)**2,axis=-2))
-# estimate_rmse_ = (estimate_rmse[:,:,0]<10) * (estimate_rmse[:,:,1]<10)
-
-# # d_est_smooth = scipy.signal.convolve(estimate_rmse[:,:,0], np.ones((5,5))/25, mode='same')
-# contour4 = ax4.pcolormesh(dd, vv, estimate_rmse[:,:,0], cmap='plasma')
-# contour5 = ax5.pcolormesh(dd, vv, estimate_rmse[:,:,1], cmap='plasma')
-# contour6 = ax6.pcolormesh(dd, vv, estimate_rmse_, cmap='Greens', vmin=-0.3, vmax=1.3)
-
-# divider4 = make_axes_locatable(ax7)
-# cax4 = divider4.append_axes('right', size='5%', pad=0.05)
-# cbar=fig.colorbar(contour4, cax=cax4, orientation='vertical')
-# cbar.ax.tick_params(labelsize=2*10)
-# divider5 = make_axes_locatable(ax8)
-# cax5 = divider5.append_axes('right', size='5%', pad=0.05)
-# cbar=fig.colorbar(contour5, cax=cax5, orientation='vertical')
-# cbar.ax.tick_params(labelsize=2*10)
-
-
-# if crb_file_path is not None:
-#         crb_data = np.load(crb_file_path)
-#         crb = crb_data[crb_key]
-#         crb_d = crb_data['distance']
-#         ax1.plot(crb_d, np.sqrt(crb), linewidth=3, color='red', linestyle='--')
-
-# resfile = mf_filekey[0]
-# results = np.load(os.path.join(results_dir, resfile))
-# distance_arr = results['distance']
-# velocity_arr = results['velocity']
-# dd, vv = np.meshgrid(distance_arr, velocity_arr, indexing='ij')
-# dv_arr = np.stack([dd,vv],axis=-1)
-# n_sim = results['n_simulation']
-# print(n_sim)
-# max_d = np.amax(distance_arr)
-
-# estimator_key = mf_filekey[1]
-# estimate_arr = results['estimator_'+estimator_key]
-# for i in range(estimate_arr.shape[0]):
-#         for j in range(estimate_arr.shape[1]):
-#                 for n in range(estimate_arr.shape[2]):
-#                         if np.all(estimate_arr[i,j,n]==np.array([-111,-111])):
-#                                 estimate_arr[i,j,n] = np.array([max_d, 0])
-
-# print(f"{estimator_key:s}, {results['param_name']:s}")
-
-# estimate_error = estimate_arr - np.expand_dims(dv_arr, axis=-2)
-# estimate_rmse = np.sqrt(np.mean((estimate_error)**2,axis=-2))
-# estimate_rmse_ = (estimate_rmse[:,:,0]<10) * (estimate_rmse[:,:,1]<10)
-
-# # d_est_smooth = scipy.signal.convolve(estimate_rmse[:,:,0], np.ones((5,5))/25, mode='same')
-# contour4 = ax7.pcolormesh(dd, vv, estimate_rmse[:,:,0], cmap='plasma')
-# contour5 = ax8.pcolormesh(dd, vv, estimate_rmse[:,:,1], cmap='plasma')
-# contour6 = ax9.pcolormesh(dd, vv, estimate_rmse_, cmap='Greens', vmin=-0.3, vmax=1.3)
-
-# divider4 = make_axes_locatable(ax4)
-# cax4 = divider4.append_axes('right', size='5%', pad=0.05)
-# cbar=fig.colorbar(contour4, cax=cax4, orientation='vertical')
-# cbar.ax.tick_params(labelsize=2*10)
-# divider5 = make_axes_locatable(ax5)
-# cax5 = divider5.append_axes('right', size='5%', pad=0.05)
-# cbar=fig.colorbar(contour5, cax=cax5, orientation='vertical')
-# cbar.ax.tick_params(labelsize=2*10)
-
-# if crb_file_path is not None:
-#         crb_data = np.load(crb_file_path)
-#         crb = crb_data[crb_key]
-#         crb_d = crb_data['distance']
-#         ax1.plot(crb_d, np.sqrt(crb), linewidth=3, color='red', linestyle='--')
-
-# # ax1.set_zscale('log')
-# # ax1.legend()
-# ax1.set_xlabel('distance (m)', fontsize=12*3, **font)
-# ax1.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# # ax1.set_title('Distance RMSE', fontsize=12*3, **font)
-# ax1.tick_params(axis='both', which='major', labelsize=10*3)
-# ax2.set_xlabel('distance (m)', fontsize=12*3, **font)
-# ax2.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# # ax2.set_title('Veloctiy RMSE', fontsize=12*3, **font)
-# ax2.tick_params(axis='both', which='major', labelsize=10*3)
-# ax3.set_xlabel('distance (m)', fontsize=12*3, **font)
-# ax3.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# # ax3.set_title('RMSE < 10 ($m$ or $m/s$)', fontsize=12*3, **font)
-# ax3.tick_params(axis='both', which='major', labelsize=10*3)
-
-# ax4.set_xlabel('distance (m)', fontsize=12*3, **font)
-# ax4.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# # ax4.set_title('Distance RMSE', fontsize=12*3, **font)
-# ax4.tick_params(axis='both', which='major', labelsize=10*3)
-# ax5.set_xlabel('distance (m)', fontsize=12*3, **font)
-# ax5.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# # ax5.set_title('Veloctiy RMSE', fontsize=12*3, **font)
-# ax5.tick_params(axis='both', which='major', labelsize=10*3)
-# ax6.set_xlabel('distance (m)', fontsize=12*3, **font)
-# ax6.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# # ax6.set_title('RMSE < 10 ($m$ and $m/s$)', fontsize=12*3, **font)
-# ax6.tick_params(axis='both', which='major', labelsize=10*3)
-
-# ax7.set_xlabel('distance (m)', fontsize=12*3, **font)
-# ax7.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# # ax4.set_title('Distance RMSE', fontsize=12*3, **font)
-# ax7.tick_params(axis='both', which='major', labelsize=10*3)
-# ax8.set_xlabel('distance (m)', fontsize=12*3, **font)
-# ax8.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# # ax5.set_title('Veloctiy RMSE', fontsize=12*3, **font)
-# ax8.tick_params(axis='both', which='major', labelsize=10*3)
-# ax9.set_xlabel('distance (m)', fontsize=12*3, **font)
-# ax9.set_ylabel('velocity (m/s)', fontsize=12*3, **font)
-# # ax6.set_title('RMSE < 10 ($m$ and $m/s$)', fontsize=12*3, **font)
-# ax9.tick_params(axis='both', which='major', labelsize=10*3)
-
-
-# gs = GridSpec(5, 4, height_ratios=[0.1,0.1,8,8,8],
-#               left=0.08, right=0.92, wspace=0.5, hspace=1.5, bottom=0.1, top=0.9)
-# ax1 = fig.add_subplot(gs[1,0])
-# ax2 = fig.add_subplot(gs[1,1])
-# ax3 = fig.add_subplot(gs[1,2])
-# ax4 = fig.add_subplot(gs[1,3])
 
 ax1 = fig.add_axes([0.2, 0.82, 0.1, 0.04])
 ax1.axis('off')
@@ -474,47 +256,16 @@ ax1 = fig.add_axes([0.79, 0.82, 0.1, 0.04])
 ax1.axis('off')
 ax1.set_title('(iii) Proposed', fontsize=12*3)
 
-# ax1 = fig.add_axes([0.56+0.04, 0.82, 0.1, 0.04])
-# ax1.axis('off')
-# ax1.set_title('(i) Tsuchida', fontsize=12*3)
-
-# ax1 = fig.add_axes([0.79+0.03, 0.82, 0.1, 0.04])
-# ax1.axis('off')
-# ax1.set_title('(ii) Proposed', fontsize=12*3)
-
 
 ax1 = fig.add_axes([0.25+0.05, 0.87, 0.45, 0.04])
 ax1.axis('off')
 ax1.set_title('(a) Triangular Modulation', fontsize=15*3)
-
-# ax1 = fig.add_axes([0.5+0.05, 0.87, 0.45, 0.04])
-# ax1.axis('off')
-# ax1.set_title('(b) Sinusoidal Modulation', fontsize=15*3)
 
 ax = fig.add_axes([0, 0.1, 0.1, 0.9])
 ax.axis('off')
 ax.text(0.55, 0.755, 'Distance\n RMSE\n (m)', transform=ax.transAxes, fontsize=14*3, va='top', ha='center')
 ax.text(0.55, 0.45, 'Velocity\n  RMSE\n (m/s)', transform=ax.transAxes, fontsize=14*3, va='top', ha='center')
 ax.text(0.55, 0.14, 'Distance \n RMSE $<$ 10m\n and Velocity \n RMSE $<$ 10m/s', transform=ax.transAxes, fontsize=10*3, va='top', ha='center')
-
-
-
-# ax2.set_title('Proposed')
-# ax3.set_title('Tsuchida')
-# ax4.set_title('Proposed')
-# ax1.set_title('Triangular Modulation')
-# ax2.set_title('Sinusoidal Modulation')
-
-
-# gs1 = GridSpec(3, 3, left=0.05, right=0.48, wspace=0.05)
-# ax1 = fig.add_subplot(gs1[:-1, :])
-# ax2 = fig.add_subplot(gs1[-1, :-1])
-# ax3 = fig.add_subplot(gs1[-1, -1])
-
-# gs2 = GridSpec(3, 3, left=0.55, right=0.98, hspace=0.05)
-# ax4 = fig.add_subplot(gs2[:, :-1])
-# ax5 = fig.add_subplot(gs2[:-1, -1])
-# ax6 = fig.add_subplot(gs2[-1, -1])
 
 plt.show()
 

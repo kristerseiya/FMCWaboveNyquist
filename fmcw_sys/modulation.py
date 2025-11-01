@@ -17,17 +17,11 @@ class Modulation():
     def generate_freq_x(self):
         raise NotImplementedError()
     
-    # def compute_jacobian_x(self):
-    #     raise NotImplementedError()
-    
     def generate_phase(self, distance: float, velocity: float):
         return self.generate_phase_x(0, 0) - self.generate_phase_x(distance, velocity)
     
     def generate_freq(self, distance: float, velocity: float):
         return self.generate_freq_x(0, 0) - self.generate_freq_x(distance, velocity)
-    
-    # def compute_jacobian(self, distance: float, velocity: float):
-    #     return self.compute_jacobian_x(0, 0) - self.compute_jacobian_x(distance, velocity)
     
 class SinusoidalModulation(Modulation):
     def __init__(self, meas_prop: FMCWMeasurementProperties):
@@ -139,7 +133,6 @@ class SinusoidalModulation(Modulation):
                 jacobian[:,1] += -self.bandwidth/2*t - f0*t
                 jacobian[:,1] *= 2 / 3e8
             jacobian *= 2*np.pi
-            # return phase, jacobian
         
         if compute_hessian:
             if isinstance(distance, np.ndarray):
@@ -159,7 +152,6 @@ class SinusoidalModulation(Modulation):
                 hessian[:,2] = 1/2*self.bandwidth/self.Tchirp*np.pi*np.sin(np.pi*(t-delay-v*t)/self.Tchirp)*t
                 hessian[:,2] *= (2 / 3e8)**2
             hessian *= 2*np.pi
-            # return phase, hessian
         
         if compute_hessian:
             return phase, jacobian, hessian
@@ -187,29 +179,6 @@ class SinusoidalModulation(Modulation):
         
         phase_rx = self.generate_phase_x(t, distance, velocity)
         return phase_tx-phase_rx
-   
-# class SinusoidalModulation(Modulation):
-#     def __init__(self, meas_prop: FMCWMeasurementProperties):
-#         if meas_prop.get_modulation_type() != 'sinusoidal':
-#             raise ValueError('measurement property is not consistent with the class')
-#         self.meas_prop = copy.deepcopy(meas_prop)
-#         self.sample_rate = meas_prop.get_sample_rate()
-#         self.T = meas_prop.get_chirp_length()
-#         self.B = meas_prop.get_bandwidth()
-#         self.linewidth = meas_prop.get_linewidth()
-#         self.lambd_c = meas_prop.get_carrier_wavelength()
-    
-#     def generate_phase_x(self, t: np.ndarray, distance: float=0, velocity: float=0):
-        # delay = distance * 2 / 3e8
-        # gamma = self.B / self.T
-        # v = 2*velocity/3e8
-        # f0 = 3e8 / self.lambd_c - self.B / 2
-
-        # phase = -1/np.pi/2*self.T*self.B*np.sin(np.pi*(t-delay-v*t)/self.T) 
-        # phase += self.B/2*(t-delay-v*t) - f0*v*t
-        # return phase
-    
-#     def generate_freq_x(self):
 
 class TriangularModulation(Modulation):
     def __init__(self, meas_prop: FMCWMeasurementProperties):
@@ -325,7 +294,6 @@ class TriangularModulation(Modulation):
                 jacobian[:,1] += -f0*(2*t/3e8)
             jacobian *= 2*np.pi
             return phase, jacobian
-            # raise NotImplementedError('cannot compute jacobian for triangular modulation phase')
         
         return phase
     
@@ -343,177 +311,11 @@ class TriangularModulation(Modulation):
         
         phase_rx = self.generate_phase_x(t, distance, velocity)
         return phase_tx-phase_rx
-    
-
-# class SinusoidalModulation(Modulation):
-#     def __init__(self, meas_prop: FMCWMeasurementProperties):
-#         if meas_prop.get_modulation_type() != 'sinusoidal':
-#             raise ValueError('measurement property is not consistent with the class')
-#         self.meas_prop = copy.deepcopy(meas_prop)
-#         self.sample_rate = meas_prop.get_sample_rate()
-#         self.Tchirp = meas_prop.get_chirp_length()
-#         self.bandwidth = meas_prop.get_bandwidth()
-#         self.linewidth = meas_prop.get_linewidth()
-#         self.lambd_c = meas_prop.get_carrier_wavelength()
-    
-#     def generate_freq(self, t: np.ndarray, distance: float|Sequence|np.ndarray, velocity: float|Sequence|np.ndarray, 
-#                      compute_jacobian: bool=False, normalize_freq: bool=True, aliased: bool=True):
-     
-#         d = distance
-#         v = velocity
-
-#         if isinstance(d , Sequence):
-#             d = np.array(d)
-#         if isinstance(v, Sequence):
-#             v = np.array(v)
-#         if isinstance(d, np.ndarray):
-#             d = np.expand_dims(d, 1)
-#         if isinstance(v, np.ndarray):
-#             v = np.expand_dims(v, 1)
-
-#         doppler_shift = v * 2 / self.lambd_c
-#         delay = d * 2 / 3e8
-#         gamma = self.bandwidth / self.Tchirp
-#         sin_if_tx = - 0.5 * self.bandwidth * np.cos(np.pi/self.Tchirp*t)
-#         sin_if_rx = - 0.5 * self.bandwidth * np.cos(np.pi/self.Tchirp*(t-delay)) - doppler_shift
-
-#         if aliased:
-#             if self.meas_prop.is_complex_available():
-#                 mixed_if = utils.wrap(sin_if_tx - sin_if_rx, -self.sample_rate/2, self.sample_rate/2)
-#                 aliased_deriv = 1
-#             else:
-#                 mixed_if, aliased_deriv = utils.mirror_deriv(sin_if_tx - sin_if_rx, 0, self.sample_rate/2)
-#         else:
-#             aliased_deriv = 1
-
-#         if compute_jacobian:
-#             d_deriv = aliased_deriv * 0.5*gamma*np.pi*np.sin(np.pi/self.Tchirp*(t-delay)) * 2 / 3e8
-#             v_deriv = aliased_deriv * 2 / self.lambd_c
-#             if normalize_freq:
-#                 mixed_if /= self.sample_rate
-#                 d_deriv /= self.sample_rate
-#                 v_deriv /= self.sample_rate
-#             return_vals =  (mixed_if, d_deriv, v_deriv)
-#         elif normalize_freq:
-#             mixed_if /= self.sample_rate
-#             return_vals = mixed_if
-#         else:
-#             return_vals = mixed_if
-
-#         return return_vals
-
-#     def generate_freq_x(self, t: np.ndarray, distance: float|Sequence|np.ndarray, velocity: float|Sequence|np.ndarray, 
-#                          compute_jacobian: bool=False, normalize_freq: bool=True):
-        
-#         doppler_shift = velocity * 2 / self.lambd_c
-#         delay = distance * 2 / 3e8
-#         gamma = self.bandwidth / self.Tchirp
-#         sin_if_rx = - 0.5 * self.bandwidth * np.cos(np.pi/self.Tchirp*(t-delay)) - doppler_shift
-        
-#         if normalize_freq:
-#             sin_if_rx /= self.sample_rate
-
-#         if compute_jacobian:
-#             raise NotImplementedError('compute jacobian for sinusoidal modulation generate_freq_x is not supported')
-
-#         return sin_if_rx
-    
-#     def generate_phase_x(self, t: np.ndarray, 
-#                          distance: float|np.ndarray=0, velocity: float|np.ndarray=0, 
-#                          compute_jacobian: bool=False, compute_hessian: bool=False):
-        
-#         if isinstance(distance, np.ndarray):
-#             distance = np.expand_dims(distance, 1)
-#         if isinstance(velocity, np.ndarray):
-#             velocity = np.expand_dims(velocity, 1)
-
-#         delay = distance * 2 / 3e8
-#         gamma = self.bandwidth / self.Tchirp
-#         v = 2*velocity/3e8
-#         f0 = 3e8 / self.lambd_c - self.bandwidth / 2
-
-#         phase = -1/np.pi/2*self.Tchirp*self.bandwidth*np.sin(np.pi*(t-delay-v*t)/self.Tchirp) 
-#         phase += self.bandwidth/2*(t-delay-v*t) - f0*v*t
-#         phase *= 2*np.pi
-
-#         if compute_jacobian or compute_hessian:
-#             if isinstance(distance, np.ndarray):
-#                 jacobian = np.zeros((len(distance), len(t), 2))
-#                 jacobian[:,:,0] = 1/2*self.bandwidth*np.cos(np.pi*(t-delay-v*t)/self.Tchirp) 
-#                 jacobian[:,:,0] += -self.bandwidth/2
-#                 jacobian[:,:,0] *= 2 / 3e8
-#                 jacobian[:,:,1] = 1/2*self.bandwidth*np.cos(np.pi*(t-delay-v*t)/self.Tchirp)*t 
-#                 jacobian[:,:,1] += -self.bandwidth/2*t - f0*t
-#                 jacobian[:,:,1] *= 2 / 3e8
-#             else:
-#                 jacobian = np.zeros((len(t), 2))
-#                 jacobian[:,0] = 1/2*self.bandwidth*np.cos(np.pi*(t-delay-v*t)/self.Tchirp) 
-#                 jacobian[:,0] += -self.bandwidth/2
-#                 jacobian[:,0] *= 2 / 3e8
-#                 jacobian[:,1] = 1/2*self.bandwidth*np.cos(np.pi*(t-delay-v*t)/self.Tchirp)*t 
-#                 jacobian[:,1] += -self.bandwidth/2*t - f0*t
-#                 jacobian[:,1] *= 2 / 3e8
-#             jacobian *= 2*np.pi
-#             # return phase, jacobian
-        
-#         if compute_hessian:
-#             if isinstance(distance, np.ndarray):
-#                 hessian = np.zeros((len(distance), len(t), 3))
-#                 hessian[:,:,0] = 1/2*self.bandwidth/self.Tchirp*np.pi*np.sin(np.pi*(t-delay-v*t)/self.Tchirp) 
-#                 hessian[:,:,0] *= (2 / 3e8)**2
-#                 hessian[:,:,1] = 1/2*self.bandwidth/self.Tchirp*np.pi*np.sin(np.pi*(t-delay-v*t)/self.Tchirp)*(t **2)
-#                 hessian[:,:,1] *= (2 / 3e8)**2
-#                 hessian[:,:,2] = 1/2*self.bandwidth/self.Tchirp*np.pi*np.sin(np.pi*(t-delay-v*t)/self.Tchirp)*t
-#                 hessian[:,:,2] *= (2 / 3e8)**2
-#             else:
-#                 hessian = np.zeros((len(t), 3))
-#                 hessian[:,0] = 1/2*self.bandwidth/self.Tchirp*np.pi*np.sin(np.pi*(t-delay-v*t)/self.Tchirp) 
-#                 hessian[:,0] *= (2 / 3e8)**2
-#                 hessian[:,1] = 1/2*self.bandwidth/self.Tchirp*np.pi*np.sin(np.pi*(t-delay-v*t)/self.Tchirp)*(t **2)
-#                 hessian[:,1] *= (2 / 3e8)**2
-#                 hessian[:,2] = 1/2*self.bandwidth/self.Tchirp*np.pi*np.sin(np.pi*(t-delay-v*t)/self.Tchirp)*t
-#                 hessian[:,2] *= (2 / 3e8)**2
-#             hessian *= 2*np.pi
-#             # return phase, hessian
-        
-#         if compute_hessian:
-#             return phase, jacobian, hessian
-#         elif compute_jacobian:
-#             return phase, jacobian
-#         return phase
-    
-#     def generate_phase(self, t: np.ndarray, 
-#                        distance: float|np.ndarray=0, velocity: float|np.ndarray=0, 
-#                        compute_jacobian: bool=False, compute_hessian: bool=False):
-        
-#         phase_tx = self.generate_phase_x(t, 0, 0)
-#         if isinstance(distance, np.ndarray):
-#             phase_tx = np.expand_dims(phase_tx, axis=0)
-
-#         if compute_hessian:
-#             phase_rx, jacobian_rx, hessian_rx = self.generate_phase_x(t, distance, velocity, compute_hessian=True)
-            
-#             return phase_tx-phase_rx,  -jacobian_rx, -hessian_rx
-        
-#         if compute_jacobian:
-#             phase_rx, jacobian_rx = self.generate_phase_x(t, distance, velocity, compute_jacobian=True)
-            
-#             return phase_tx-phase_rx, -jacobian_rx
-        
-#         phase_rx = self.generate_phase_x(t, distance, velocity)
-#         return phase_tx-phase_rx
 
 
 def _stairfunc(x,c,e,x0,d,a,compute_deriv=False):
-    # c = 30
-    # e = 0.5
-    # x0 = 1/10
-    # d = ( (x0-0.5)+e-1/2*x0 ) / ( np.sin(c*(x0-0.5)) - 0.5*x0*c*np.cos(c*(x0-0.5)) )
-    # a = (1- c*d*np.cos(c*(x0-0.5))) / (2*x0)
     x_w = utils.mirror(x, 0, 1)
     y = np.zeros_like(x_w)
-    # y[(x>=(1-x0))*(x<(1+x0))] = -a*(x[(x>=(1-x0))*(x<(1+x0))]+1)**2 + 1
-    # y[(x>=(x0-1))*(x<(-x0))] = (x[(x>=(x0-1))*(x<(-x0))]+1.5)-d*np.sin(c*(x[(x>=(x0-1))*(x<(-x0))]+1.5)) + e
     xint1 = (x_w>=-x0)*(x_w<x0)
     xint2 = (x_w>=x0)*(x_w<(1-x0))
     xint3 = (x_w>=(1-x0))*(x_w<(1+x0))
@@ -521,8 +323,6 @@ def _stairfunc(x,c,e,x0,d,a,compute_deriv=False):
     y[xint2] = (x_w[xint2]-0.5)-d*np.sin(c*(x_w[xint2]-0.5)) + e
     y[xint3] = -a*(x_w[xint3]-1)**2 + 1
     y = y - 0.5
-    # y[(x>=(1+x0))*(x<(2-x0))] = -(x[(x>=(1+x0))*(x<(2-x0))]-1.5)+d*np.sin(c*(x[(x>=(1+x0))*(x<(2-x0))]-1.5)) + e
-    # y[(x>=(2-x0))] = -(x[(x>=(2-x0))]-1.5)+d*np.sin(c*(x[(x>=(2-x0))]-1.5)) + e
     if compute_deriv:
         z = np.zeros_like(x)
         z[xint1] = 2*a*(x_w[xint1])
@@ -537,8 +337,6 @@ def _stairfunc_integral(x,c,e,x0,d,a):
     
     x_w = utils.mirror(x, 0, 1)
     y = np.zeros_like(x)
-    # y[(x>=(1-x0))*(x<(1+x0))] = -a*(x[(x>=(1-x0))*(x<(1+x0))]+1)**2 + 1
-    # y[(x>=(x0-1))*(x<(-x0))] = (x[(x>=(x0-1))*(x<(-x0))]+1.5)-d*np.sin(c*(x[(x>=(x0-1))*(x<(-x0))]+1.5)) + e
     xint1 = (x_w>=-x0)*(x_w<x0)
     xint2 = (x_w>=x0)*(x_w<(1-x0))
     xint3 = (x_w>=(1-x0))*(x_w<(1+x0))

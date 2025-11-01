@@ -81,8 +81,6 @@ def matched_filter2d(meas_prop: FMCWMeasurementProperties,
     else:
         K = 1
     T = meas_prop.get_chirp_length()
-    # N = len(mixed_signal)
-    # mixed_signal = np.pad(mixed_signal, (0, N), mode='constant', constant_values=0)
     n_cycle = int(np.ceil( len(mixed_signal) / (2*T*sample_rate) ))
     ta = np.arange(0, 2*T*n_cycle, 1/sample_rate/K)
     xa = np.zeros((len(ta)), dtype=mixed_signal.dtype)
@@ -92,16 +90,12 @@ def matched_filter2d(meas_prop: FMCWMeasurementProperties,
     phase_tx = fmcw_meas.generate_phase(ta, 0, 0)
     z1 = fft(xa*np.exp(-1j*phase_tx))
     z2 = np.conj(fft(np.exp(-1j*phase_tx)))
-    # Z2 = circulant(z2)[:,:N]
     Z2 = np.zeros((len(z2), N), dtype=z2.dtype)
     for i in range(N):
         if i < (N+1)//2:
             Z2[:,i] = np.roll(z2, i)
         else:
             Z2[:,i] = np.roll(z2, i-N)
-        # f = fftfreq(M*N, 1/sample_rate)[i]
-        # phase_rx = fmcw_meas.generate_phase(ta, 0, f*meas_prop.lambd_c/2)
-        # Z2[:,i] = np.conj(fft(np.exp(-1j*phase_rx)))
 
     filter_output = ifft( np.expand_dims(z1,1) *  Z2, axis=0  )
     filter_output = ifft( filter_output, axis=1 )

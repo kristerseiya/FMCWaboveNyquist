@@ -24,10 +24,8 @@ results_filekey = [('100725113611_estimates_100725113611_seeds_sin3000_moresim.n
 
 crlb_paths = []
 
-# plt.rcParams['text.usetex'] = True
 plt.rcParams["font.family"] = "Times New Roman"
 font = {'fontname':'Times New Roman'}
-# plt.rc('text.latex', preamble=r"\usepackage{bm}\boldmath\renewcommand{\seriesdefault}{\bfdefault}")
 
 fig = plt.figure(1, figsize=(9,12))
 ax1 = fig.add_subplot(111)
@@ -76,20 +74,12 @@ for i in range(len(results_filekey)):
                 for k in range(len(bin_distance_center)):
                         bin_rmse[k] = np.mean(rmse[bin_idx==(k+1)])
                         bin_rmse_std[k] = np.std(rmse[bin_idx==(k+1)])
-                # ax1.plot(distance_arr, np.sqrt(np.mean((estimate_arr.T-distance_arr)**2,axis=0)), 
-                #           linewidth=3, **plot_param)
-                # ax1.plot(bin_distance_center, bin_rmse, linewidth=3, **plot_param)
-                # rmse_std = np.std((estimate_arr.T-distance_arr)**2,axis=0)
-                # rmse_std = scipy.signal.convolve(rmse_std, np.ones((10,))/10, mode='same')
-                # ax1.plot(bin_distance_center, bin_rmse, linewidth=4, **plot_param, zorder=(len(results_filekey)*2-i))
-                # ax1.fill_between(distance_arr, rmse-rmse_std, rmse+rmse_std, alpha=0.4, color=plot_param['color'], zorder=(len(results_filekey)-i))
                 window1 = 10
                 d_est_rmse_smooth = scipy.signal.convolve(rmse, np.ones((window1,))/window1, mode='same')
                 d_est_rmse_2_smooth = scipy.signal.convolve(rmse**2, np.ones((window1,))/(window1), mode='same')
                 d_est_rmse_std = (d_est_rmse_2_smooth - window1/(window1)*d_est_rmse_smooth**2)**(1/2)
                 ax1.plot(bin_distance_center, bin_rmse, linewidth=2.5, **plot_param, zorder=(len(results_filekey)*2-i))
                 ax1.fill_between(bin_distance_center, bin_rmse-bin_rmse_std, bin_rmse+bin_rmse_std, alpha=0.4, color=plot_param['color'], zorder=(len(results_filekey)-i))
-                # ax1.fill_between(distance_arr, d_est_rmse_smooth-d_est_rmse_std, d_est_rmse_smooth+d_est_rmse_std, alpha=0.4, color=plot_param['color'], zorder=(len(results_filekey)-i))
 
 
 for crlb_path, crlb_key, plot_params in crlb_paths:
@@ -98,19 +88,15 @@ for crlb_path, crlb_key, plot_params in crlb_paths:
         crb_d = crb_data['distance']
         d_est_rmse_smooth = scipy.signal.convolve(np.sqrt(crb), np.ones((window1,))/window1, mode='same')
         ax1.plot(crb_d, np.sqrt(crb),  **plot_params)
-        # ax1.plot(crb_d, np.sqrt(crb), linewidth=3, color='red', linestyle='--', label='approximate crb')
 
 plt.rcParams["font.family"] = "Times New Roman"
 font = {'fontname':'Times New Roman'}
 
 ax1.set_yscale('log')
 ax1.legend(loc='upper left', fontsize=25).set_zorder(3*len(results_filekey))
-# ax1.legend(loc=(0.23,0.57))
 ax1.set_xlabel('target distance (m)', fontsize=35)
 ax1.set_ylabel('RMSE (m)', fontsize=35)
 ax1.tick_params(axis='both', which='major', labelsize=25)
-#ax1.set_title('Triangular Modulation (Observed Length = $2\mu s$)', fontsize=20)
-# ax1.set_ylim(2e-4,2e1)
 ax1.set_ylim(8e-4,8e4)
 ax1.grid(linewidth=2)
 fig.tight_layout()

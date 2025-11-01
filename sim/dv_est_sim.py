@@ -76,13 +76,6 @@ if __name__ == "__main__":
 
                 np.random.seed(measseeds_arr[d_idx, v_idx, n])
                 signal, second_output = fmcw_meas.generate(dist_true, velo_true, t)
-                # if args.seeds is None:
-                #     signal, second_output, seed = fmcw_meas.generate(dist_true, 0, t, return_seed=True)
-                #     measseeds_arr[d_idx, n] = seed
-                # else:
-                #     signal, second_output = fmcw_meas.generate(dist_true, 0, t, 
-                #                                                random_seed=measseeds_arr[d_idx, n],
-                #                                                return_seed=False)
 
                 for i, estimator in enumerate(estimators):
                     if isinstance(estimator, presets.Estimator):

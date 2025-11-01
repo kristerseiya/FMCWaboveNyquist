@@ -38,7 +38,6 @@ def gen_phase_noise(ts: ArrayLike,
     ts_all = ts_all[sort_idx]
 
     phase_noise = np.zeros_like(ts_all)
-    # phase_noise[0] = np.random.rand() * 2*np.pi
     
     for i in range(1, 2*N_t):
         delay = ts_all[i] - ts_all[i-1]
@@ -56,47 +55,6 @@ def gen_phase_noise(ts: ArrayLike,
         phase_noise_mix = phase_noise_mix[0]
 
     return phase_noise_mix
-
-    # num_t = len(ts)
-    # tt = ts - tau
-    # ts_all = np.zeros((num_t*(n_echo+1)))
-    # idx_ts = np.zeros((num_t,), dtype=int)
-    # idx_tt = np.zeros((n_echo, num_t), dtype=int)
-    # i = 0 # idx for ts
-    # j = 0 # idx for tt
-    # k = 0 # idx for ts_all
-    # while j < num_t and tt[j] < ts[i]:
-    #     ts_all[k] = tt[j]
-    #     idx_tt[j] = k
-    #     j = j + 1
-    #     k = k + 1
-    # while j < num_t:
-    #     ts_all[k] = ts[i]
-    #     ts_all[k+1] = tt[j]
-    #     idx_ts[i] = k
-    #     idx_tt[j] = k + 1
-    #     i = i + 1
-    #     j = j + 1
-    #     k = k + 2
-    # while i < num_t:
-    #     ts_all[k] = ts[i]
-    #     idx_ts[i] = k
-    #     i = i + 1
-    #     k = k + 1
-
-    # phi_n = np.zeros_like(ts_all)
-    # phi_n[0] = np.random.rand() * 2*np.pi
-    # for i in range(1, 2*num_t):
-    #     delay = ts_all[i] - ts_all[i-1]
-    #     phi_n[i] = phi_n[i-1] + np.random.normal(0, scale=np.sqrt(np.abs(delay)*linewidth*2*np.pi))
-
-    # del_phi_n = phi_n[idx_ts] - phi_n[idx_tt]
-
-    # if return_all:
-    #     return del_phi_n, phi_n[idx_ts], phi_n[idx_tt]
-
-
-    # return del_phi_n
 
 
 class FMCWMeasurement():
@@ -232,18 +190,9 @@ class FMCWMeasurement():
         mixed_phase = phase_tx - phase_rx 
         if random_phase_offset:
             pass
-            # mixed_phase += np.random.rand() * 2*np.pi
-
-            # random_seed = int(np.random.rand(1)*(2**32-1))
-
         if include_phase_noise:
             phase_noise = gen_phase_noise(ts, distance, velocity, linewidth)
             mixed_phase = mixed_phase + phase_noise
-
-        # if return_complex_signal:
-        #     mixed_signal = np.exp(1j*(mixed_phase))
-        # else:
-        #     mixed_signal = np.cos(mixed_phase)
         
         R = self.meas_prop.reflectance
         A = self.meas_prop.detector_effective_area
@@ -276,80 +225,10 @@ class FMCWMeasurement():
         
         u = y1 - y2
         v = y1 + y2
-        
-        # meas_signal = 2 * eta * np.sqrt(lo_power * rx_power) * np.exp(1j*(mixed_phase))[0]
-        # if return_complex_signal:
-        #     y1 = 0.5*(lo_power + rx_interference)*(1+1j) + np.sqrt(lo_power*rx_power) @ np.exp(1j*(mixed_phase))
-        #     y2 = 0.5*(lo_power + rx_interference)*(1+1j) - np.sqrt(lo_power*rx_power) @ np.exp(1j*(mixed_phase))
-        # else:
-        #     y1 = 0.5*(lo_power + rx_interference) + np.sqrt(lo_power*rx_power) @ np.cos(mixed_phase)
-        #     y2 = 0.5*(lo_power + rx_interference) - np.sqrt(lo_power*rx_power) @ np.cos(mixed_phase)
-
-        # shot_noise1 = np.sqrt(np.maximum(np.zeros_like(meas_signal),q*(eta*(lo_power*rx_power)+0.5*np.real(meas_signal))))*np.random.randn(*y1.shape) + eta*(lo_power+rx_power)
-        # shot_noise2 = np.sqrt(np.maximum(np.zeros_like(meas_signal),q*(eta*(lo_power*rx_power)-0.5*np.real(meas_signal))))*np.random.randn(*y1.shape) + eta*(lo_power+rx_power)
-        # shot_noise3 = np.sqrt(np.maximum(np.zeros_like(meas_signal),q*(eta*(lo_power*rx_power)+0.5*np.imag(meas_signal))))*np.random.randn(*y1.shape) + eta*(lo_power+rx_power)
-        # shot_noise4 = np.sqrt(np.maximum(np.zeros_like(meas_signal),q*(eta*(lo_power*rx_power)-0.5*np.imag(meas_signal))))*np.random.randn(*y1.shape) + eta*(lo_power+rx_power)
-    
-        # u = meas_signal + shot_noise1 - shot_noise2 + 1j*(shot_noise3 - shot_noise4)
-        # v = shot_noise1 + shot_noise2 + 1j*(shot_noise3 + shot_noise4)
 
         return_vals = (u, v)
 
         return return_vals
-        
-        # phase_tx = self.generate_reference_phase(ts, 0, 0)
-        # phase_rx = self.generate_reference_phase(ts, distance, velocity)
-        # mixed_phase = phase_tx - phase_rx
-
-        # if include_phase_noise:
-            
-        #     # phase_noise = gen_phase_noise(ts, delay+v*ts, linewidth)
-        #     phase_noise = gen_phase_noise(ts, distance, velocity, linewidth)
-        #     self._phase_noise = phase_noise
-        #     mixed_phase = mixed_phase + self._phase_noise
-
-        # if return_complex_signal:
-        #     meas_signal = np.exp(1j*(mixed_phase))
-        # else:
-        #     meas_signal = np.cos(mixed_phase)
-        
-        # R = self.meas_prop.reflectance
-        # A = self.meas_prop.detector_effective_area
-        # eta = self.meas_prop.detector_effectivity
-        # tx_power = self.meas_prop.transmitted_power
-        # lo_power = tx_power
-        # q = 1.6e-19
-
-        # rx_power = tx_power * A / (np.pi*distance**2) * R
-        # meas_signal = 4 * eta * np.sqrt(lo_power * rx_power) * meas_signal
-        
-        # if include_shot_noise:
-        #     # shot_noise1 = q * np.random.poisson(eta*(lo_power+rx_power)/q, size=meas_signal.shape)
-        #     # shot_noise2 = q * np.random.poisson(eta*(lo_power+rx_power)/q, size=meas_signal.shape)
-        #     self._shot_noise_1 = np.random.randn(*meas_signal.shape) * np.sqrt(q*eta*(lo_power+rx_power)) + eta*(lo_power+rx_power)
-        #     self._shot_noise_2 = np.random.randn(*meas_signal.shape) * np.sqrt(q*eta*(lo_power+rx_power)) + eta*(lo_power+rx_power)
-                
-        #     zero_mean_shot_noise = self._shot_noise_1 - self._shot_noise_2
-        #     second_output = self._shot_noise_1 + self._shot_noise_2
-
-        #     if return_complex_signal:
-        #         # shot_noise3 = q * np.random.poisson(eta*(lo_power+rx_power)/q, size=meas_signal.shape)
-        #         # shot_noise4 = q * np.random.poisson(eta*(lo_power+rx_power)/q, size=meas_signal.shape)
-        #         self._shot_noise_3 = np.random.randn(*meas_signal.shape) * np.sqrt(q*eta*(lo_power+rx_power)) + eta*(lo_power+rx_power)
-        #         self._shot_noise_4 = np.random.randn(*meas_signal.shape) * np.sqrt(q*eta*(lo_power+rx_power)) + eta*(lo_power+rx_power)
-
-        #         zero_mean_shot_noise = (self._shot_noise_1 - self._shot_noise_2) + 1j*(self._shot_noise_3 - self._shot_noise_4)
-        #         second_output = (self._shot_noise_1 + self._shot_noise_2) + 1j*(self._shot_noise_3 + self._shot_noise_4)
-
-        #     meas_signal = meas_signal + zero_mean_shot_noise
-
-        # else:
-
-        #     second_output = np.ones(meas_signal.shape) * 2*eta*(lo_power+rx_power)
-        #     if return_complex_signal:
-        #         second_output = second_output + 1j * np.ones(meas_signal.shape) * 2*eta*(lo_power+rx_power)
-
-        # return meas_signal, second_output
 
     def get_meas(self):
         return self.meas_time, self.meas_val

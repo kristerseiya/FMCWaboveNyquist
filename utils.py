@@ -20,8 +20,6 @@ def estimate_if(t, y, method='polar_discriminator', mirror=False):
         if y.dtype != np.complex128:
             y = hilbert(y)
         z = np.angle(y[1:] * np.conj(y[:-1])) / (2*np.pi)
-        # if y.dtype != np.complex128:
-        #     z = utils.mirror(z, 0, 0.5)
         if mirror:
             z = mirror(z, 0, 0.5)
         tt = (t[1:] + t[:-1]) * 0.5
@@ -32,9 +30,6 @@ def estimate_if(t, y, method='polar_discriminator', mirror=False):
         ht = np.arange(-window_length//2, window_length-window_length//2)
         h = np.cos(np.pi*ht/window_length)**2
         dh = 2*np.cos(np.pi*ht/window_length)*(-np.sin(np.pi*ht/window_length))*np.pi/window_length
-        # f = np.arange(0, 0.5-0.5/len(h), 1/len(h))
-        # sh = time_freq.short_time_fourier_transform_window(y, h, hop_length)[:(len(h)-len(h)//2),:]
-        # sdh = time_freq.short_time_fourier_transform_window(y, dh, hop_length)[:(len(h)-len(h)//2),:]
         f = np.fft.fftfreq(len(h), 1)
         sh = time_freq.short_time_fourier_transform_window(y, h, hop_length)
         sdh = time_freq.short_time_fourier_transform_window(y, dh, hop_length)
@@ -148,7 +143,6 @@ def mirror_deriv(x: float|np.ndarray, min: float, max: float):
         x = np.array(x)
     else:
         x = np.copy(x)
-    # deriv = np.ones((len(x)))
     deriv = np.ones(x.shape)
 
     less = (x < min)
@@ -167,10 +161,6 @@ def wrap(x, min, max):
     return np.mod(x-min, max-min) + min
 
 def unmirror(x: float|np.ndarray, val_min: float, val_max: float, n: None|int=None, n_min: None|int=None, n_max: None|int=None):
-    # if isinstance(x, float):
-    #     x = np.array(x)
-    # else:
-    #     x = np.copy(x)
     if (n is None) and (n_min is None) and (n_max is None):
         raise ValueError("all n cannot be None")
     if (n_min is not None) and (n_max is None):
@@ -239,46 +229,6 @@ def _get_polynomial(t, coefs):
         x = x + t**(i+1)*c
     return x
 
-# def estimate_pps_coefficents(t, x, reference_distance, order=3, sample_freq=None):
-
-#     # calculate the wigner distribution
-#     Q = order - 1
-#     N = x.shape[0]
-#     lags = np.array([int(N/(Q))]*(Q-1))
-#     bins = np.arange(N)
-#     t_offset = t[0]
-#     t = t - t_offset
-#     if sample_freq is None:
-#         sample_freq = 1 / (t[1] - t[0])
-#     coef_hat = np.zeros((Q))
-#     for i in range(Q):
-#         pd = np.copy(x)
-#         for l in lags:
-#             padded_x = np.pad(pd, (0, N), 'constant', constant_values=0)
-#             pd = padded_x[l:l+N] * pd
-#         freq = max_periodogram(pd)
-#         coef_hat[-(i+1)] = freq / (factorial(Q-i)*np.prod(lags)) * sample_freq**(Q-i)
-#         if i < (Q-1):
-#             x = x * np.exp(-1j*2*np.pi*(t**(Q-i))*coef_hat[-(i+1)])
-#             lags = lags[:-1]
-
-        
-#     ref_tau = reference_distance * 2 / 3e8
-
-#     coef_transformation = pascal(order+1, kind='lower')[1:, 1:] - np.identity(order)
-#     coef_transformation = coef_transformation.T
-#     coef_transformation = coef_transformation[:-1,1:]
-#     coef_transformation = coef_transformation.astype(float)
-#     for i in range(order-1):
-#         for j in range(i, order-1):
-#             # coef_transformation[i,j] = coef_transformation[i,j] * ((+t_offset)**(j-i+1)-(+t_offset-ref_tau)**(j-i+1))
-#             coef_transformation[i,j] = coef_transformation[i,j] * ((+t_offset)**(j-i+1)-(+t_offset-ref_tau)**(j-i+1))
-#     coef_hat = np.linalg.inv(coef_transformation) @ coef_hat
-#     coef_hat = np.concatenate([[0], coef_hat])
-#     # coef_hat[1] = coef_hat[1] - gamma
-
-#     return coef_hat
-
 def hilbert_transform(signal):
     assert signal.dtype == float
     Fx = fft(signal)
@@ -290,25 +240,6 @@ def hilbert_transform(signal):
     Fx[neg_freq] = Fx[neg_freq] * 1j
     Fx[0] = 0
     return signal + 1j* np.real(ifft(Fx))
-
-# def pps_compute_down_coefs(up_coefs, Tchirp):
-#     tmp_down_coefs = np.zeros_like(up_coefs)
-#     for k, up_coef in enumerate(up_coefs):
-#         if k % 2 == 0:
-#             tmp_down_coefs[k] = up_coef
-#         else:
-#             tmp_down_coefs[k] = -up_coef
-
-#     order = len(up_coefs)
-#     coef_transformation = pascal(order+1, kind='lower')[1:, 1:]
-#     coef_transformation = coef_transformation.T
-#     coef_transformation = coef_transformation.astype(float)
-#     for i in range(order):
-#         for j in range(i+1, order):
-#             coef_transformation[i,j] = coef_transformation[i,j] * ((-Tchirp)**(j-i))
-
-#     down_coefs = coef_transformation @ tmp_down_coefs
-#     return down_coefs
 
 # highest order first
 def compute_polynomial_derivative(t, coefs):

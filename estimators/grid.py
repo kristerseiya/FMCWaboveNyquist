@@ -57,8 +57,6 @@ class GridGenerator():
             if self.meas_prop.is_complex_available():
                 if not self.meas_prop.boundary_constraint:
                     d_grid_shift = np.arange(d_range[0]+d_interval/2, d_range[-1]-MACHINE_EPSILON, d_interval)
-                    # dv_grid1 = np.stack([d_grid, np.zeros_like(d_grid)], axis=1)
-                    # dv_grid2 = np.stack([d_grid_shift, np.ones_like(d_grid_shift)*max_v], axis=1)
                     dv_grid1 = np.stack([d_grid, -np.ones_like(d_grid)*max_v/2], axis=1)
                     dv_grid2 = np.stack([d_grid_shift, np.ones_like(d_grid_shift)*max_v/2], axis=1)
                     dv_grid = np.concatenate([dv_grid1, dv_grid2], axis=0)
@@ -93,7 +91,6 @@ class GridGenerator():
         d_grid = np.arange(d_range[0], d_range[-1]-MACHINE_EPSILON, d_interval)
         d_grid_shift = np.arange(d_range[0]+d_interval/2, d_range[-1]-MACHINE_EPSILON, d_interval)
         v_grid = np.arange(v_range[0], v_range[-1]-MACHINE_EPSILON, v_interval)
-        # D_grid, V_grid = np.meshgrid(d_grid, v_grid)
         dv_grid = np.zeros((len(d_grid)*(len(v_grid)-len(v_grid)//2)+len(d_grid_shift)*len(v_grid)//2, 2))
         k = 0
         for i in range(len(v_grid)):
@@ -110,28 +107,6 @@ class GridGenerator():
     def generate_uniform_grid(self, d_interval: float|None=None, v_interval: float|None=None, 
                               num_d: int|None=None, num_v: int|None=None, 
                               d_range: Sequence|None=None, v_range: Sequence|None=None):
-
-        # max_d = self.meas_prop.get_max_d()
-        # if num_d is None:
-        #     if self.meas_prop.get_modulation_type() == 'triangle':
-        #         B = self.meas_prop.get_bandwidth()
-        #         sample_rate = self.meas_prop.get_sample_rate()
-        #         T = self.meas_prop.get_chirp_length()
-        #         interval = sample_rate/2/B*T*3e8/2 * 1.8
-        #         num_d = int(np.ceil(max_d/interval))
-        #         if not self.meas_prop.is_complex_available():
-        #             num_d = num_d * 2
-        #     elif self.meas_prop.get_modulation_type() == 'sinusoidal':
-        #         B = self.meas_prop.get_bandwidth()
-        #         sample_rate = self.meas_prop.get_sample_rate()
-        #         T = self.meas_prop.get_chirp_length()
-        #         interval = np.arcsin(sample_rate/2/B)*T/np.pi*2*3e8/2
-        #         num_d = int(np.ceil(max_d/interval))
-        #         if not self.meas_prop.is_complex_available():
-        #             num_d = num_d * 2
-        #     else:
-        #         raise ValueError('modulation must be either triangle or sinusoidal for auto resolution decision for uniform grid')
-
         if d_range is None:
             max_d = self.meas_prop.get_max_d()
             d_range = (0, max_d)
@@ -185,11 +160,6 @@ class GridGenerator():
             v_cut2 = np.arange(v_range[0]+v_interval, v_range[1]+v_interval/2, v_interval)
             v_grid = (v_cut1 + v_cut2) / 2
 
-        # grid = np.zeros((len(d_grid), len(v_grid), 2))
-        # for i, d in enumerate(d_grid):
-        #     for j, v in enumerate(v_grid):
-        #         grid[i,j,0] = d
-        #         grid[i,j,1] = v
         d_grid_2d, v_grid_2d = np.meshgrid(d_grid, v_grid, indexing='ij')
         grid = np.stack([d_grid_2d, v_grid_2d], axis=-1)
 

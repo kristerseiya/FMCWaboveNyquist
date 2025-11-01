@@ -33,7 +33,6 @@ def gen_phase_noise(ts: ArrayLike,
     ts_all = ts_all[sort_idx]
 
     phase_noise = np.zeros_like(ts_all)
-    # phase_noise[0] = np.random.rand() * 2*np.pi
     
     for i in range(1, 2*N_t):
         delay = ts_all[i] - ts_all[i-1]

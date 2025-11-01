@@ -23,7 +23,6 @@ plt.rcParams['text.usetex'] = True
 plt.rcParams["font.family"] = "Times New Roman"
 font = {'fontname':'Times New Roman'}
 plt.rc('text.latex', preamble=r"\usepackage{bm}\boldmath\renewcommand{\seriesdefault}{\bfdefault}")
-# plt.figure(figsize=(9,7))
 size_mult = 3
 
 param_name = 'stair_2e8_600_5'
@@ -48,9 +47,6 @@ plt.plot(t, trifreq, linewidth=3, color='orange')
 plt.plot(t, sinfreq, linewidth=3, color='blue')
 plt.plot(t, stfreq, linewidth=3, color='green')
     
-# ax1.set_xlabel('time (s)', fontsize=20)
-# ax1.set_ylabel('frequency (Hz)', fontsize=20)
-# ax1.tick_params(axis='both', which='major', labelsize=17)
 ax1.get_xaxis().set_ticks([])
 ax1.get_yaxis().set_ticks([])
 
@@ -62,11 +58,8 @@ for val, letter in [(0, '0'), (T, 'T'), (2*T, '2T')]:
 
 ax1.annotate('', xy=(0, 0), xytext=(2*T, 0.0),
              xycoords=('data', 'axes fraction'), arrowprops=dict(arrowstyle="<-", color='black'),
-        #      textcoords='offset points',
              ha='center', va='top', size=18)
 
-# ax1.annotate('', xy=(0, -0.1), xycoords='data', xytext=(1, -0.1), 
-#             arrowprops=dict(arrowstyle="<->", color='b'))
 ax1.annotate('', xy=(-0.0, 0), xytext=(-0.0, 2.5),
              xycoords=('axes fraction','data'), arrowprops=dict(arrowstyle="<->", color='black'),
         #      textcoords='offset points',
@@ -75,12 +68,6 @@ ax1.annotate('', xy=(-0.0, 0), xytext=(-0.0, 2.5),
 ax1.annotate('$B$', xy=(-0.05, 1.25), xytext=(0, 0),
                 xycoords=('axes fraction','data'), textcoords='offset points',
                 ha='center', va='top', size=18)
-
-# labelpad = ax1.yaxis.labelpad + 35
-# for val, letter in [(-B/2/sample_rate, '-B/2'),  (B/2/sample_rate, 'B/2')]:
-#     ax1.annotate('${}$'.format(letter), xy=(0, val), xytext=(-labelpad, 0),
-#                 xycoords=('axes fraction','data'), textcoords='offset points',
-#                 ha='center', va='top', size=18)
 
 ax1.spines['top'].set_visible(False)
 ax1.spines['right'].set_visible(False)
@@ -93,6 +80,5 @@ ax1.text(T*1.65, 1.4, 'smooth stair \n modulation', **font, fontsize=20)
 ax1.plot([T, T*1.2], [1.4, 1.925], color='black')
 ax1.plot([T*1.6, T*1.35], [2.1, 1.98], color='black')
 ax1.plot([T*1.85, T*1.7], [1.3, 0.97], color='black')
-# fig.tight_layout()
 plt.show()
 
