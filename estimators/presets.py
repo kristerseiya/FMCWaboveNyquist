@@ -40,7 +40,7 @@ def select_presets(presets: Sequence[str]):
         
         elif preset == 'wn_snradjust_lattice_faster':
 
-            algo_kwargs.append((IFRegressor, {'gridgen_type':'optimal', 'method':'LBFGS',
+            algo_kwargs.append((IFRegressor, {'gridgen_type':'optimal', 'method':'BFGS',
                                               'init_step': 'none',
                                               'ignore_quadrature':False, 'snr_adjustment':True}))
             
@@ -58,7 +58,7 @@ def select_presets(presets: Sequence[str]):
             d_grid_num = int(str_parsed[-2])
             v_grid_num = int(str_parsed[-1])
 
-            algo_kwargs.append((IFRegressor, {'gridgen_type':'uniform', 'method':'LBFGS',
+            algo_kwargs.append((IFRegressor, {'gridgen_type':'uniform', 'method':'BFGS',
                                               'init_step': 'none',
                                               'ignore_quadrature':False, 'snr_adjustment':True,
                                               'grid_d_num': d_grid_num, 'grid_v_num': v_grid_num}))
@@ -115,7 +115,7 @@ def select_presets(presets: Sequence[str]):
             
         elif preset == 'lorentz_faster':
 
-            algo_kwargs.append((LorentzianRegressor, {'ignore_quadrature':False, 'method':'LBFGS'}))
+            algo_kwargs.append((LorentzianRegressor, {'ignore_quadrature':False, 'method':'BFGS'}))
         
         elif preset == 'maxpd':
 

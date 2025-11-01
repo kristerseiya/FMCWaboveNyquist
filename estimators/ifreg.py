@@ -372,6 +372,7 @@ class IFRegressor(Estimator):
             now = time.time()
             if self.gridgen_type == 'optimal':
                 grid = self.grid_generator.generate_optimal_lattice_grid(precaution_rate=0.9)
+                print(grid.shape)
             elif self.gridgen_type == 'uniform':
                 grid = self.grid_generator.generate_lattice_grid(self.grid_d_num, self.grid_v_num)
             elif self.gridgen_type == 'smart_maxpd':
@@ -460,11 +461,11 @@ class IFRegressor(Estimator):
                 else:
                     x_hat_final = x_init[0]
                     
-            elif self.method == "LBFGS":
+            elif self.method == "BFGS":
                 max_d = self.meas_prop.get_max_d()
                 max_v = self.meas_prop.get_max_v()
                 
-                self.total_n_evals = 0
+                self.n_eval = 0
                 grid = grid.reshape((-1, 2))
                 def obj_func(x):
                     return self.if_likelihood.evaluate(np.expand_dims(x,axis=0), extra_var=0.1)[0]
@@ -479,7 +480,7 @@ class IFRegressor(Estimator):
                     xhats[i,0] = np.mod(res.x[0], max_d)
                     xhats[i,1] = np.mod(res.x[1]+max_v, 2*max_v)-max_v
                     costs[i] = res.fun
-                    self.total_n_evals += res.nit
+                    self.n_eval += res.nfev + res.njev
                 def obj_func(x):
                     return self.if_likelihood.evaluate(np.expand_dims(x,axis=0), extra_var=0)[0]
                 def jac(x):
@@ -491,7 +492,7 @@ class IFRegressor(Estimator):
                 x_hat_final = res.x
                 x_hat_final[0] = np.mod(res.x[0], max_d)
                 x_hat_final[1] = np.mod(res.x[1]+max_v, 2*max_v)-max_v
-                self.total_n_evals += res.nit
+                self.n_eval += res.nfev + res.njev
 
             x_hat_finals[k] = x_hat_final
 
@@ -503,106 +504,6 @@ class IFRegressor(Estimator):
             return_val = (x_hat_final, intermediate_results)
 
         return return_val
-    
-    def estimate2(self, t: np.ndarray, mixed_signal: np.ndarray, second_output: np.ndarray|None=None):
-        
-        if (np.ndim(t)!=1) or (np.ndim(mixed_signal)!=1):
-            raise ValueError('input dimension is incorrect')
-        if self.assume_zero_velocity and ( (t[-1] + 2/self.meas_prop.sample_rate - t[0])<(self.meas_prop.Tchirp) ):
-            raise RuntimeError('not enough observations')
-        elif not self.assume_zero_velocity and ( (t[-1] + 2/self.meas_prop.sample_rate - t[0])<(2*self.meas_prop.Tchirp) ):
-            raise RuntimeError('not enough observations')
-        
-        if self.test_flag:
-            intermediate_results = dict()
-
-        if self.ignore_quadrature:
-            mixed_signal = np.real(mixed_signal)
-            if second_output is not None:
-                second_output = np.real(second_output)
-
-        if not isinstance(self.if_likelihood, IFShortestPath):
-            if  self.snr_adjustment and (second_output is not None):
-                snr_estimate = 10*np.log10((np.var(mixed_signal)-np.var(second_output))/np.var(second_output))
-                self.if_likelihood.adjust_for_snr(snr_estimate)
-            else:
-                self.if_likelihood.remove_snr_adjustment()
-
-        
-        T = self.meas_prop.Tchirp
-        sample_rate = self.meas_prop.sample_rate
-        M = int(np.ceil(2*T*sample_rate))
-        N = len(mixed_signal)
-        L = int(np.floor(N/M))
-        if self.average:
-            idx_partitions = [(i*M, (i+1)*M) for i in range(L)]
-            x_hat_finals = np.zeros((L,2))
-        else:
-            idx_partitions = [(0, N)]
-            x_hat_finals = np.zeros((1,2))
-
-        for k, idx_part in enumerate(idx_partitions):
-            t_, mixed_signal_ = t[idx_part[0]:idx_part[1]], mixed_signal[idx_part[0]:idx_part[1]]
-            tt, ifx = utils.estimate_if(t_, mixed_signal_, method='polar_discriminator', mirror=False)
-            self.if_likelihood.store_observations(tt, ifx)
-            
-            if self.test_flag:
-                intermediate_results['if_estimate'] = (tt, ifx)
-                intermediate_results['likelihood_model'] = copy.deepcopy(self.if_likelihood)
-
-            if self.gridgen_type == 'optimal':
-                grid = self.grid_generator.generate_optimal_lattice_grid()
-            elif self.gridgen_type == 'uniform':
-                grid = self.grid_generator.generate_lattice_grid(self.grid_d_num, self.grid_v_num)
-            elif self.gridgen_type == 'smart_maxpd':
-                if self.meas_prop.get_modulation_type() != 'triangle':
-                    raise NotImplementedError('smart grid generation is only for triangular modulation')
-                grid = self.grid_generator.generate_smart_grid(t_, mixed_signal_, second_output, method='maxpd_coarse')
-            elif self.gridgen_type == 'smart_lorentzian':
-                if self.meas_prop.get_modulation_type() != 'triangle':
-                    raise NotImplementedError('smart grid generation is only for triangular modulation')
-                grid = self.grid_generator.generate_smart_grid(t_, mixed_signal_, second_output, method='lorentzian')
-            else:
-                raise RuntimeError("did not recognize gridgen_type")
-            
-            grid = grid.reshape((-1, 2))
-            def obj_func(x):
-                return self.if_likelihood.evaluate(np.expand_dims(x,axis=0), extra_var=0.1)[0]
-            def jac(x):
-                return self.if_likelihood.compute_gradient(np.expand_dims(x,axis=0), extra_var=0.1)[0]
-            xhats = np.zeros((len(grid),2))
-            costs = np.zeros((len(grid),))
-            for i, x0 in enumerate(grid):
-                res = minimize(obj_func, 
-                               x0, jac=jac,
-                               method="BFGS")
-                xhats[i] = res.x
-                costs[i] = res.fun
-            def obj_func(x):
-                return self.if_likelihood.evaluate(np.expand_dims(x,axis=0), extra_var=0)[0]
-            def jac(x):
-                return self.if_likelihood.compute_gradient(np.expand_dims(x,axis=0), extra_var=0)[0]
-            x_hat = xhats[np.argmin(costs)]
-            res = minimize(obj_func, 
-                            x_hat, jac=jac,
-                            method="BFGS")
-                
-            x_hat_finals[k] = res.x
-        
-        x_hat_final = np.mean(x_hat_finals, axis=0)
-        max_d = self.meas_prop.get_max_d()
-        max_v = self.meas_prop.get_max_v()
-        x_hat_final[0] = np.mod(x_hat_final[0], max_d)
-        x_hat_final[1] = np.mod(x_hat_final[1]+max_v, 2*max_v)-max_v
-
-        if not self.test_flag:
-            return_val = x_hat_final
-        else:
-            return_val = (x_hat_final, intermediate_results)
-
-        return return_val
-            
-
     
     def set_test_flag(self, test: bool):
         self.test_flag = test

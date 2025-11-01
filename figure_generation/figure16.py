@@ -34,7 +34,6 @@ results_filekey = [ ('121224031249_estimates_120924015450_seeds_tri600_highsnr.n
                     ('121224031826_estimates_120924015450_seeds_stair600_highsnr.npz','wn_snradjust_lattice',{'color':'green', 'alpha':0.6, 'label':'Stairs Simulation ($T=2\mu$s, x1)', 'linestyle':'-', 'zorder':1}),]
 
 crlb_paths = [ ('fisher_approx/d_crb_gaussian_approx_tri600_5_highsnr.npz','crb_approx_iid',{'color':'red', 'label':'Triangular MCRB', 'linestyle':'-', 'linewidth':2*size_mult, 'zorder':6}), 
-              #('fisher_approx/d_crb_gaussian_approx_tri600_5_highsnr.npz','crb_approx_full',{'color':'black', 'label':'Triangular MCRB ($T=2\mu$s, x1)', 'linestyle':'--', 'linewidth':4}), 
                 ('fisher_approx/d_crb_gaussian_approx_sin600_5_highsnr.npz','crb_approx_iid',{'color':'blue', 'label':'Sinusoidal MCRB', 'linestyle':'-', 'linewidth':2*size_mult, 'zorder':5}),
                 ('fisher_approx/d_crb_gaussian_approx_stair600_5_highsnr.npz','crb_approx_iid',{'color':'green', 'label':'Stairs MCRB', 'linestyle':'-', 'linewidth':2*size_mult, 'zorder':4}),
                 ]
@@ -102,16 +101,12 @@ for i in range(len(results_filekey)):
         new_plot_params = copy.deepcopy(plot_params)
         new_plot_params["linestyle"] = "--"
         new_plot_params["label"] = new_plot_params["label"].replace("MCRB", "CRB")
-        # ax1.plot(crb_d, np.sqrt(crb_ub_smooth), **new_plot_params)
 
 ax1.set_yscale('log')
 ax1.legend(loc='upper left', fontsize=9*size_mult, ncol=1).set_zorder(3*len(results_filekey))
-# ax1.legend(loc=(0.23,0.57))
 ax1.set_xlabel('target distance (m)', fontsize=15*size_mult)
 ax1.set_ylabel('RMSE (m)', fontsize=15*size_mult, **font)
 ax1.tick_params(axis='both', which='major', labelsize=10*size_mult)
-# ax1.set_title('Sinusoidal Modulation (Observed Length = $10\mu s$)', fontsize=17)
-# ax1.set_ylim(2e-4,2e1)
 ax1.set_ylim(8e-3,3e-1)
 ax1.set_title('(a) Numerical Results and MCRB', fontsize=12*size_mult)
 ax1.grid(linewidth=2*size_mult)
@@ -125,7 +120,6 @@ results_filekey = [ ('121224031249_estimates_120924015450_seeds_tri600_highsnr.n
 
 
 crlb_paths = [ ('fisher_approx/d_crb_gaussian_approx_tri600_5_highsnr.npz','crb_approx_iid',{'color':'red', 'label':'Triangular MCRB ($T=2\mu$s, x1)', 'linestyle':'--', 'linewidth':2*size_mult, 'zorder':9}), 
-              #('fisher_approx/d_crb_gaussian_approx_tri600_5_highsnr.npz','crb_approx_full',{'color':'black', 'label':'Triangular MCRB ($T=2\mu$s, x1)', 'linestyle':'--', 'linewidth':4}), 
                 ('fisher_approx/d_crb_gaussian_approx_sin600_5_highsnr.npz','crb_approx_iid',{'color':'blue', 'label':'Sinusoidal MCRB ($T=2\mu$s, x1)', 'linestyle':'--', 'linewidth':2*size_mult, 'zorder':8}),
                 ('fisher_approx/d_crb_gaussian_approx_stair600_5_highsnr.npz','crb_approx_iid',{'color':'green', 'label':'Stairs MCRB ($T=2\mu$s, x1)', 'linestyle':'--', 'linewidth':2*size_mult, 'zorder':7}),
                 ]

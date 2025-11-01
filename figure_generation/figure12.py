@@ -49,7 +49,6 @@ class WrapNormal():
     def compute_likelihood(self, d, t, signal, linewidth):
         self.if_var = linewidth*2/meas_prop.sample_rate/(2*np.pi)
         tt, ifx = utils.estimate_if(t, signal, method='polar_discriminator', mirror=False)
-        # d = t*3e8/2
         if_hat = self.if_generator.generate_freq_x(tt, np.expand_dims(d,1), 0, compute_jacobian=False, normalize_freq=True)
         if_hat = utils.wrap(if_hat, -1/2, 1/2)
         Z = np.zeros((len(tt)))
@@ -57,7 +56,7 @@ class WrapNormal():
         extra_var = 0.
         for k in np.arange(-K, K):
             Z = Z + np.exp(-(ifx-if_hat+k)**2/(2*(self.if_var+extra_var)))
-        nll = np.mean( -np.log(Z+1e-20), axis=1) # + len(tt)/2*np.log(2*(self.if_var+extra_var))
+        nll = np.mean( -np.log(Z+1e-20), axis=1)
         return nll
 
         
@@ -158,7 +157,6 @@ for id, l in enumerate(linewidth_arr):
         pn_spectrum_sim[i] = np.abs(fft(np.exp(-1j*phase_noise), n=len(ref_h)))
         y1 = ref*np.exp(-1j*phase_noise) + add_noise
         y2 = ref2*np.exp(-1j*phase_noise) + add_noise
-        # y2 = y2 + np.roll(ref2*np.exp(-1j*phase_noise) + add_noise, 400)
         ref_up_noisey = np.zeros_like(ref_h)
         ref2_up_noisey = np.zeros_like(ref2_h)
         ref_up_noisey[:6*len(ref):6] = y1
@@ -184,8 +182,6 @@ idx = 0
 plt.rcParams["font.family"] = "Times New Roman"
 font = {'fontname':'Times New Roman'}
 plt.figure(figsize=(16, 8))
-# for id in [len(distance_arr)-1,]:
-# 240, 720, 1200, 1680, 2160
 plt.subplot(121)
 plt.errorbar((240-1200)/2400,
              np.roll(tri_autocorr_mean[idx], 2*1200)[2*240],
@@ -203,16 +199,11 @@ plt.errorbar((2160-1200)/2400,
              np.roll(tri_autocorr_mean[idx], 2*1200)[2*2160],
              np.roll(tri_autocorr_std[idx], 2*1200)[2*2160],color="red",capsize=10, linewidth=4, label="peak value deviation")
 plt.plot((np.arange(len(tri_autocorr_mean[idx]))-2*1200)/2400/2, np.roll(tri_autocorr_mean[idx], 2*1200), color="black", linewidth=2.5, label="mean cross-correlation values")
-# plt.plot((np.arange(len(pn_spectrum_mean[idx]))-2*1200)/2400/2, np.roll(pn_spectrum_mean[idx], 2*1200), color="green", linewidth=2.5, label="mean phase noise spectrum")
 plt.grid(linewidth=1)
 
 plt.scatter((np.array([2*240, 2*720, 2*1200, 2*1680, 2*2160])-2*1200)/2400/2,
              np.roll(tri_autocorr_mean[idx], 2*1200)[[2*240, 2*720, 2*1200, 2*1680, 2*2160]], color="blue", s=50, zorder=10, label="mean peak values")
-    # plt.fill_between(np.arange(len(tri_autocorr_mean[id])),
-    #                  np.roll(tri_autocorr_mean[id]-tri_autocorr_std[id], 1200),
-    #                  np.roll(tri_autocorr_mean[id]+tri_autocorr_std[id], 1200),
-    #                  color=cm.plasma(id*1.0/len(distance_arr))
-    #                  )
+
 plt.yscale("log")
 # plt.ylim(100, 1000)
 plt.legend(fontsize=20)
@@ -240,16 +231,9 @@ plt.errorbar((3822-2400)/4800,
              np.roll(sin_autocorr_mean[idx], 2*1200)[3822],
              np.roll(sin_autocorr_std[idx], 2*1200)[3822],color="red",capsize=10, linewidth=4, label="peak value deviation")
 plt.plot((np.arange(len(sin_autocorr_mean[idx]))-2*1200)/2400/2, np.roll(sin_autocorr_mean[idx], 2*1200), color="black", linewidth=2.5, label="mean cross-correlation values")
-# plt.plot(np.arange(len(sin_autocorr_mean[idx])), np.roll(sin_autocorr_mean[idx], 2*1200), color="black", linewidth=2.5, label="mean cross-correlation values")
-# plt.plot((np.arange(len(pn_spectrum_mean[idx]))-2*1200)/2400/2, np.roll(pn_spectrum_mean[idx], 2*1200), color="green", linewidth=2.5, label="mean phase noise spectrum")
 plt.grid(linewidth=1)
 plt.scatter((np.array([978,1770,2400,3030,3822])-2400)/4800,
              np.roll(sin_autocorr_mean[idx], 2400)[[978,1770,2400,3030,3822]], color="blue", s=50, zorder=10, label="mean peak values")
-    # plt.fill_between(np.arange(len(tri_autocorr_mean[id])),
-    #                  np.roll(tri_autocorr_mean[id]-tri_autocorr_std[id], 1200),
-    #                  np.roll(tri_autocorr_mean[id]+tri_autocorr_std[id], 1200),
-    #                  color=cm.plasma(id*1.0/len(distance_arr))
-    #                  )
 
 plt.yscale("log")
 plt.ylim(17, 4000)
@@ -257,14 +241,12 @@ plt.legend(fontsize=20)
 plt.title("(ii) Sinusoidal Modulation", fontsize=25)
 plt.xlabel("Difference from delay, $\\frac{t-\\tau}{2T}$", fontsize=25)
 plt.tick_params(axis='both', which='major', labelsize=17)
-# plt.savefig("mf_autocorr.png")
 fig = plt.gcf()
 fig.suptitle("(a) Deviation in Matched Filter Objective", fontsize=30)
 plt.subplots_adjust(left=0.05, right=0.95, top=0.85, bottom=0.15)
 
 plt.figure(figsize=(16, 8))
 plt.subplot(121)
-# plt.plot(t, tri_lh_mean[idx])
 print(len(tri_lh_mean[idx]))
 for idx in range(len(linewidth_arr)-1, -1, -1):
     plt.plot((np.arange(len(tri_lh_mean[idx]))-400)/800, tri_lh_mean[idx],color="black")
@@ -294,7 +276,6 @@ plt.xlabel("Difference from delay, $\\frac{t-\\tau}{2T}$", fontsize=25)
 plt.tick_params(axis='both', which='major', labelsize=17)
 
 plt.subplot(122)
-# plt.plot(t, sin_lh_mean[idx])
 for idx in range(len(linewidth_arr)-1, -1, -1):
     plt.plot((np.arange(len(sin_lh_mean[idx]))-400)/800, sin_lh_mean[idx],color="black")
     plt.errorbar((154-400)/800,
