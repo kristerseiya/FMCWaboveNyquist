@@ -329,7 +329,7 @@ class LorentzianRegressor(Estimator):
                 lorenz_param2 = lorentzian_regression(mixed_signal[meas2_idx], self.meas_prop, shot_var=shot_var)
                 success2 = True
                 beat_freq2 = lorenz_param2[0] / self.sample_rate
-            elif self.method == "LBFGS":
+            elif self.method == "BFGS":
                 lorenz_param1 = lorentzian_regression_faster(mixed_signal[meas1_idx], self.meas_prop, shot_var=shot_var)
                 success1 = True
                 beat_freq1 = lorenz_param1[0] / self.sample_rate

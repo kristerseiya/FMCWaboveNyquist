@@ -372,7 +372,6 @@ class IFRegressor(Estimator):
             now = time.time()
             if self.gridgen_type == 'optimal':
                 grid = self.grid_generator.generate_optimal_lattice_grid(precaution_rate=0.9)
-                print(grid.shape)
             elif self.gridgen_type == 'uniform':
                 grid = self.grid_generator.generate_lattice_grid(self.grid_d_num, self.grid_v_num)
             elif self.gridgen_type == 'smart_maxpd':
