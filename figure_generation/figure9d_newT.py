@@ -15,12 +15,12 @@ import utils
 this_dir = os.path.dirname(os.path.realpath(__file__))
 results_dir = os.path.join(utils.PROJECT_DIR, 'sim', 'd_est_sim_results')
 
-results_filekey = [('100725060618_estimates_100725060618_seeds_tri600_moresim.npz','wn_snradjust_lattice_faster',{'color':'blue', 'label':'Proposed ($T=4\mu s$, x1)'}), 
-                   ('101425034528_estimates_100725060618_seeds_lorentz_redo.npz','lorentz',{'color':'orange', 'label':'Lorentzian Regression ($T=4\mu s$, x1)'}),
-                ('101325191526_estimates_100725060618_seeds_maxpd_redo.npz','maxpd',{'color':'green', 'label':'Maximum Periodogram ($T=4\mu s$, x1)'}),
-                ('100825105424_estimates_100725060618_seeds_tri600mf.npz','matchedfilter_optim',{'color':'grey', 'label':'Matched Filter ($T=4\mu s$, x1)'}),
+results_filekey = [ ('100725091013_estimates_100725091013_seeds_sin600_moresim.npz','wn_snradjust_lattice_faster',{'color':'blue', 'label':'Proposed ($T=4\mu s$, x1)'}), 
+                ('100825111716_estimates_100725091013_seeds_sin600mf.npz','matchedfilter_optim',{'color':'grey', 'label':'Matched Filter ($T=4\mu s$, x1)'}), 
+                   ('101325193206_estimates_100725091013_seeds_freqavg_redo.npz','freqavg',{'color':'rosybrown', 'label':'Tsuchida ($T=4\mu s$, x1)'}),
                 ]
 
+crlb_paths = []
 
 plt.rcParams["font.family"] = "Times New Roman"
 font = {'fontname':'Times New Roman'}
@@ -79,8 +79,16 @@ for i in range(len(results_filekey)):
                 ax1.plot(bin_distance_center, bin_rmse, linewidth=2.5, **plot_param, zorder=(len(results_filekey)*2-i))
                 ax1.fill_between(bin_distance_center, bin_rmse-bin_rmse_std, bin_rmse+bin_rmse_std, alpha=0.4, color=plot_param['color'], zorder=(len(results_filekey)-i))
 
+for crlb_path, crlb_key, plot_params in crlb_paths:
+        crb_data = np.load(crlb_path)
+        crb = crb_data[crlb_key]
+        crb_d = crb_data['distance']
+        d_est_rmse_smooth = scipy.signal.convolve(np.sqrt(crb), np.ones((window1,))/window1, mode='same')
+        ax1.plot(crb_d, np.sqrt(crb),  **plot_params)
 
-ax1.vlines([120], ymin=2e-4, ymax=8e4, linestyles='--', colors='black', linewidth=2.5)
+plt.rcParams["font.family"] = "Times New Roman"
+font = {'fontname':'Times New Roman'}
+
 ax1.set_yscale('log')
 ax1.legend(loc='upper left', fontsize=25).set_zorder(3*len(results_filekey))
 ax1.set_xlabel('target distance (m)', fontsize=35)

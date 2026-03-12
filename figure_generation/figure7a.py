@@ -48,9 +48,9 @@ fig1 = plt.figure(1, figsize=(7*size_mult, 5*size_mult))
 fig1.subplots_adjust(left=0.15, right=0.95, bottom=0.15, top=0.9)
 ax1 = fig1.add_subplot(111)
 mesh = ax1.pcolormesh(distance_arr*2/3e8/2/T, velocity_arr*2/meas_prop.get_carrier_wavelength()/sample_rate, if_d2.T, cmap='Blues')
-ax1.set_title("$\\mathcal{D}^2(T,0,\\tau,f)$", fontsize=20*size_mult, y=1.03)
-ax1.set_ylabel('normalized doppler shift, $f/f_s$', fontsize=20*size_mult)
-ax1.set_xlabel('normalized delay, $\\tau/(2T)$', fontsize=20*size_mult)
+ax1.set_title("$\\mathcal{D}(\\frac{T}{2},0,\\tau,D)$", fontsize=20*size_mult, y=1.03)
+ax1.set_ylabel('normalized doppler shift, $D/f_s$', fontsize=20*size_mult)
+ax1.set_xlabel('normalized delay, $\\tau/T$', fontsize=20*size_mult)
 
 ax1.tick_params(axis='both', which='major', labelsize=15*size_mult)
 
